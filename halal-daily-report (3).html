@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>የሀላል ዕለታዊ የባለሙያ ሪፖርት</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171A; --panel:#1B1F23; --card:#21262B;
+    --amber:#F5A623; --amber-dim:#4A3A19;
+    --green:#4CAF6D; --green-dim:#1E3A28;
+    --red:#E4572E; --red-dim:#3A2018;
+    --text:#ECECE9; --text-2:#9AA3AB; --text-3:#63696F;
+    --line:#2E343A; --line-strong:#3A4147;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans Ethiopic',sans-serif;line-height:1.6;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:820px;margin:0 auto;padding:26px 18px 80px;}
+  .hidden{display:none !important;}
+
+  .plate{
+    background:linear-gradient(180deg,#20252A,#191D21);
+    border:1px solid var(--line-strong);border-radius:6px;
+    padding:20px 22px;position:relative;overflow:hidden;
+  }
+  .plate::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:repeating-linear-gradient(135deg,var(--amber) 0 10px,#1a1a1a 10px 20px);
+  }
+  .plate h1{margin:0;font-size:19px;font-weight:700;}
+  .plate p{margin:4px 0 0;font-size:12.5px;color:var(--text-2);}
+
+  .session-bar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 16px;flex-wrap:wrap;gap:8px;}
+  .session-bar .who{font-size:13px;}
+  .session-bar .who .name{font-weight:600;}
+  .badge-admin{font-size:10.5px;background:var(--amber-dim);color:var(--amber);padding:2px 8px;border-radius:20px;margin-left:8px;font-family:'JetBrains Mono',monospace;}
+  .badge-worker{font-size:10.5px;background:#2b2f33;color:var(--text-2);padding:2px 8px;border-radius:20px;margin-left:8px;font-family:'JetBrains Mono',monospace;}
+
+  .section-title{display:flex;align-items:center;gap:10px;margin:28px 0 12px;font-size:13px;color:var(--text-2);}
+  .section-title .num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:1px 6px;}
+  .section-title::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:5px;}
+  input,select,textarea{
+    width:100%;background:var(--card);border:1px solid var(--line-strong);border-radius:4px;
+    color:var(--text);font-family:'Noto Sans Ethiopic',sans-serif;font-size:14px;padding:9px 10px;
+  }
+  input.mono{font-family:'JetBrains Mono',monospace;}
+  textarea{resize:vertical;min-height:56px;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber);}
+  input[readonly]{color:var(--text-2);background:#191d21;}
+
+  .readout{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  .readout .chip{
+    flex:1;min-width:120px;background:var(--card);border:1px solid var(--line-strong);
+    border-radius:5px;padding:10px 12px;
+  }
+  .readout .chip .k{font-size:11px;color:var(--text-2);}
+  .readout .chip .v{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;margin-top:3px;}
+  .readout .chip.green .v{color:var(--green);}
+  .readout .chip.red .v{color:var(--red);}
+  .readout .chip.amber .v{color:var(--amber);}
+
+  .jobs{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+  .job{background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:10px 12px;}
+  .job-top{display:flex;align-items:center;gap:10px;}
+  .job-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-2);width:20px;}
+  .job-name{flex:1;}
+  .job-name input{padding:7px 9px;font-size:13.5px;}
+  .toggle-group{display:flex;gap:6px;}
+  .toggle{
+    width:34px;height:30px;border-radius:5px;border:1px solid var(--line-strong);
+    background:var(--panel);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;
+    color:var(--text-3);
+  }
+  .toggle.active-yes{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+  .toggle.active-no{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+  .job-reason{margin-top:8px;display:none;}
+  .job-reason.show{display:block;}
+  .job-reason input{font-size:13px;padding:7px 9px;}
+
+  .form-actions{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap;}
+  button{
+    font-family:'Noto Sans Ethiopic',sans-serif;font-size:13.5px;border-radius:5px;padding:10px 18px;
+    cursor:pointer;border:1px solid var(--line-strong);background:var(--card);color:var(--text);
+  }
+  button:hover{border-color:var(--amber);}
+  button.primary{background:var(--amber);color:#241a05;border-color:var(--amber);font-weight:600;}
+  button.primary:hover{background:#ffb748;}
+  button.ghost{background:transparent;border-color:var(--line);}
+  button.small{padding:6px 12px;font-size:12px;}
+
+  .account-box{
+    background:var(--amber-dim);border:1px solid #5a4520;border-radius:6px;padding:14px 16px;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .account-box .k{font-size:11.5px;color:#d9b46a;}
+  .account-box .v{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--amber);}
+  .account-box .name{font-size:13px;color:var(--text-2);margin-top:2px;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;}
+  .check-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:10px 12px;cursor:pointer;}
+  .check-item input{width:auto;margin:0;}
+  .check-item span{font-size:13px;color:var(--text-2);}
+
+  .upload-label{display:block;font-size:13px;color:var(--text-2);margin-bottom:8px;}
+  .upload-btn{
+    display:inline-block;background:var(--card);border:1px dashed var(--line-strong);
+    border-radius:5px;padding:9px 16px;font-size:12.5px;color:var(--amber);cursor:pointer;
+  }
+  .upload-btn:hover{border-color:var(--amber);}
+  .thumb-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .thumb{position:relative;width:70px;height:70px;border-radius:5px;overflow:hidden;border:1px solid var(--line-strong);}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb .rm{
+    position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+    background:rgba(0,0,0,.7);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;border:none;padding:0;
+  }
+  .thumb-view{width:110px;height:110px;border-radius:5px;overflow:hidden;border:1px solid var(--line-strong);}
+  .thumb-view img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  .output-box{
+    background:var(--card);border:1px solid var(--line-strong);border-radius:6px;padding:16px;
+    white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;color:var(--text);
+    max-height:420px;overflow-y:auto;
+  }
+  .copy-msg{font-size:12px;color:var(--green);margin-top:8px;display:none;}
+
+  .history{display:flex;flex-direction:column;gap:8px;}
+  .hist-item{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .hist-item .meta{font-size:12.5px;color:var(--text-2);}
+  .hist-item .meta .d{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
+  .hist-actions{display:flex;gap:8px;}
+  .hist-actions button{padding:6px 12px;font-size:12px;}
+  .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
+
+  .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .auth-tab{flex:1;text-align:center;padding:10px;border-radius:5px;border:1px solid var(--line-strong);cursor:pointer;font-size:13px;color:var(--text-2);}
+  .auth-tab.active{background:var(--amber-dim);color:var(--amber);border-color:var(--amber);}
+  .error-msg{color:var(--red);font-size:12.5px;margin-top:10px;display:none;}
+  .hint{font-size:11.5px;color:var(--text-3);margin-top:4px;}
+  .notice{background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:12px 14px;font-size:12px;color:var(--text-2);margin-bottom:16px;}
+
+  @media(max-width:640px){
+    .grid2{grid-template-columns:1fr;}
+    .readout{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="plate">
+    <h1>📋 የሀላል ዕለታዊ የባለሙያ ሪፖርት</h1>
+    <p>ዕለታዊ የስራ፣ ገቢ እና ወጪ ማጠቃለያ — ለድርጅት ማስተላለፊያ</p>
+  </div>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen">
+    <div class="section-title"><span class="num">01</span> መግቢያ</div>
+    <div class="card">
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login">ግባ (Login)</div>
+        <div class="auth-tab" data-tab="register">አዲስ ተመዝገብ</div>
+      </div>
+
+      <div id="tab-login">
+        <div class="field">
+          <label>ስልክ ወይም ኢሜል</label>
+          <input type="text" id="login-id" placeholder="0912345678 ወይም name@email.com">
+        </div>
+        <div class="field">
+          <label>የይለፍ ቃል</label>
+          <input type="password" id="login-pass" placeholder="የይለፍ ቃል">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="primary" id="btn-login">ግባ</button>
+        </div>
+      </div>
+
+      <div id="tab-register" class="hidden">
+        <div class="field">
+          <label>👷 ሙሉ ስም</label>
+          <input type="text" id="reg-name" placeholder="ሙሉ ስም">
+        </div>
+        <div class="field">
+          <label>ስልክ ወይም ኢሜል</label>
+          <input type="text" id="reg-id" placeholder="0912345678 ወይም name@email.com">
+        </div>
+        <div class="field">
+          <label>የይለፍ ቃል</label>
+          <input type="password" id="reg-pass" placeholder="ቢያንስ 4 ፊደል/ቁጥር">
+        </div>
+        <div class="field">
+          <label>የአድሚን ኮድ (ለአድሚን ብቻ — ካልሆነ ባዶ ይተውት)</label>
+          <input type="password" id="reg-admin-code" placeholder="ለመደበኛ ሠራተኛ ባዶ ይተውት">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="primary" id="btn-register">ተመዝገብ</button>
+        </div>
+      </div>
+
+      <div class="error-msg" id="auth-error"></div>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="app-screen" class="hidden">
+
+    <div class="session-bar">
+      <div class="who">
+        <span class="name" id="who-name"></span>
+        <span id="who-badge"></span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="ghost small" id="btn-toggle-profile">መገለጫዬ</button>
+        <button type="button" class="ghost small" id="btn-logout">ውጣ</button>
+      </div>
+    </div>
+
+    <div id="profile-section" class="hidden">
+      <div class="section-title"><span class="num">P</span> መገለጫዬ አርትዕ</div>
+      <div class="card">
+        <div class="field">
+          <label>👷 ሙሉ ስም</label>
+          <input type="text" id="pf-name">
+        </div>
+        <div class="field">
+          <label>የአሁኑ የይለፍ ቃል <span style="color:var(--text-3);">(ለውጥ ለማድረግ ያስፈልጋል)</span></label>
+          <input type="password" id="pf-current-pass" placeholder="የአሁኑ የይለፍ ቃል">
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>አዲስ የይለፍ ቃል <span style="color:var(--text-3);">(ካልቀየሩ ባዶ ይተውት)</span></label>
+            <input type="password" id="pf-new-pass" placeholder="አዲስ የይለፍ ቃል">
+          </div>
+          <div class="field">
+            <label>አዲስ የይለፍ ቃል ድገም</label>
+            <input type="password" id="pf-new-pass2" placeholder="ድገም">
+          </div>
+        </div>
+        <div class="error-msg" id="profile-error"></div>
+        <div class="copy-msg" id="profile-success" style="color:var(--green);">✅ መገለጫ ተዘምኗል!</div>
+        <div class="form-actions">
+          <button type="button" class="primary" id="btn-save-profile">አዘምን</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="section-title"><span class="num">02</span> ቀን እና የስራ ብዛት</div>
+    <div class="card">
+      <div class="grid2">
+        <div class="field">
+          <label>📅 ቀን</label>
+          <input type="date" id="f-date" class="mono">
+        </div>
+        <div class="field">
+          <label>📆 ዕለት</label>
+          <input type="text" id="f-day" readonly>
+        </div>
+      </div>
+      <div class="field">
+        <label>1️⃣ የተላኩ ስራዎች ብዛት</label>
+        <input type="number" id="f-jobcount" class="mono" min="0" max="30" value="0">
+      </div>
+      <div class="readout">
+        <div class="chip green"><div class="k">2️⃣ የተጠናቀቁ ስራዎች ብዛት</div><div class="v" id="r-done">0</div></div>
+        <div class="chip red"><div class="k">3️⃣ ያልተጠናቀቁ ስራዎች ብዛት</div><div class="v" id="r-notdone">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="num">03</span> 📋 የስራ ዝርዝር</div>
+    <div class="card">
+      <div class="jobs" id="jobs"></div>
+    </div>
+
+    <div class="section-title"><span class="num">04</span> ገቢ እና ወጪ</div>
+    <div class="card">
+      <div class="grid2">
+        <div class="field">
+          <label>💰 5️⃣ ጠቅላላ ገቢ (ብር)</label>
+          <input type="number" id="f-income" class="mono" min="0" value="0">
+        </div>
+        <div class="field">
+          <label>🧾 6️⃣ ጠቅላላ ወጪ (ብር)</label>
+          <input type="number" id="f-expense" class="mono" min="0" value="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>የወጪ ዝርዝር</label>
+        <textarea id="f-expense-detail" placeholder="ለምሳሌ፦ ትራንስፖርት 100, ማቴሪያል 300..."></textarea>
+      </div>
+      <div class="readout">
+        <div class="chip amber"><div class="k">💵 7️⃣ ጠቅላላ ትርፍ</div><div class="v" id="r-profit">0</div></div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>📊 8️⃣ የባለሙያ ድርሻ (%)</label>
+        <input type="number" id="f-share" class="mono" min="0" max="100" value="0">
+      </div>
+      <div class="readout">
+        <div class="chip green"><div class="k">የባለሙያ ገንዘብ</div><div class="v" id="r-share-amt">0</div></div>
+        <div class="chip amber"><div class="k">🏦 9️⃣ ወደ ድርጅቱ የገባ ገንዘብ</div><div class="v" id="r-company">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="num">05</span> 🎤 🔟 ተጨማሪ ማብራሪያ</div>
+    <div class="card">
+      <textarea id="f-notes" placeholder="ተጨማሪ አስተያየት ወይም ማብራሪያ ካላችሁ እዚህ ጻፉ..."></textarea>
+    </div>
+
+    <div class="section-title"><span class="num">06</span> የድርጅት ጊዜያዊ የገቢ አካውንት</div>
+    <div class="account-box">
+      <div>
+        <div class="k">የባንክ አካውንት ቁጥር</div>
+        <div class="v">1000422578068</div>
+        <div class="name">Fuad Museyd Hassen</div>
+      </div>
+      <button type="button" class="ghost" id="btn-copy-acct">ቁጥር ኮፒ አድርግ</button>
+    </div>
+
+    <div class="section-title"><span class="num">07</span> 📌 ተጨማሪ ማያያዝ ወይም መላክ ያለባቸው</div>
+    <div class="card">
+      <div class="upload-block">
+        <label class="upload-label">✅ የተጠናቀቁ ስራዎች የዋራንቲ ካርድ እና ሎጎ ፎቶ</label>
+        <label class="upload-btn" for="f-warranty-file">📎 ፎቶ ይስቀሉ (ብዙ ፎቶ መምረጥ ይቻላል)</label>
+        <input type="file" id="f-warranty-file" accept="image/*" multiple style="display:none;">
+        <div class="thumb-row" id="warranty-preview"></div>
+      </div>
+      <div class="upload-block" style="margin-top:16px;">
+        <label class="upload-label">✅ ወደ ድርጅቱ የገባውን ገንዘብ የባንክ ደረሰኝ</label>
+        <label class="upload-btn" for="f-receipt-file">📎 ፎቶ ይስቀሉ (ብዙ ፎቶ መምረጥ ይቻላል)</label>
+        <input type="file" id="f-receipt-file" accept="image/*" multiple style="display:none;">
+        <div class="thumb-row" id="receipt-preview"></div>
+      </div>
+      <div class="hint" id="upload-status" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="ghost" id="btn-clear">አጽዳ</button>
+      <button type="button" class="primary" id="btn-generate">ሪፖርት አመንጭ</button>
+    </div>
+
+    <div class="section-title"><span class="num">08</span> ለመላክ ዝግጁ ሪፖርት</div>
+    <div class="card">
+      <div class="output-box" id="output">ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።</div>
+      <div id="view-gallery"></div>
+      <div class="copy-msg" id="copy-msg">✅ ጽሁፉ ተኮፒ ተደርጓል!</div>
+      <div class="form-actions">
+        <button type="button" class="ghost" id="btn-copy">ጽሁፉን ኮፒ አድርግ</button>
+        <button type="button" class="primary" id="btn-save">ሪፖርት አስቀምጥ</button>
+      </div>
+    </div>
+
+    <div id="admin-section" class="hidden">
+      <div class="section-title"><span class="num">09</span> 🗂️ የስራ አስኪያጅ ማጠቃለያ (አድሚን ብቻ)</div>
+      <div class="card">
+        <div class="grid2">
+          <div class="field">
+            <label>በባለሙያ አጣራ</label>
+            <select id="f-filter-worker"><option value="">ሁሉም ባለሙያዎች</option></select>
+          </div>
+          <div class="field">
+            <label>ከቀን</label>
+            <input type="date" id="f-filter-date" class="mono">
+          </div>
+        </div>
+        <div class="readout">
+          <div class="chip"><div class="k">ጠቅላላ ሪፖርቶች</div><div class="v" id="d-count">0</div></div>
+          <div class="chip green"><div class="k">ጠቅላላ ገቢ</div><div class="v" id="d-income">0</div></div>
+          <div class="chip amber"><div class="k">ጠቅላላ ትርፍ</div><div class="v" id="d-profit">0</div></div>
+          <div class="chip green"><div class="k">ወደ ድርጅት የገባ</div><div class="v" id="d-company">0</div></div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="num">10</span> 👥 የተጠቃሚዎች አስተዳደር (አድሚን ብቻ)</div>
+      <div class="card">
+        <div class="history" id="users-list"></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="num">11</span> <span id="history-title">የኔ ያለፉ ሪፖርቶች</span></div>
+    <div class="history" id="history"></div>
+
+  </div>
+
+</div>
+
+<script>
+const USERS_KEY = 'halal-users-v1';
+const REPORTS_KEY = 'halal-daily-reports-v2';
+const ADMIN_SECRET = 'FUAD-ADMIN-2026';
+const DAYS_AM = ['እሁድ','ሰኞ','ማክሰኞ','ረቡዕ','ሐሙስ','አርብ','ቅዳሜ'];
+
+let users = [];
+let reports = [];
+let currentUser = null;
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function escapeAttr(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function round(n){ return Math.round((Number(n)||0)*100)/100; }
+function money(n){ return round(n).toLocaleString('en-US'); }
+
+// ---- Photo upload handling (warranty / receipt) ----
+let warrantyImages = [];
+let receiptImages = [];
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxDim = 900;
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else{ w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs(containerId, arr, kind){
+  const box = document.getElementById(containerId);
+  box.innerHTML = arr.map((src, i)=>`
+    <div class="thumb">
+      <img src="${src}">
+      <button type="button" class="rm" onclick="removePhoto('${kind}', ${i})">✕</button>
+    </div>
+  `).join('');
+  updateUploadStatus();
+}
+
+function updateUploadStatus(){
+  const el = document.getElementById('upload-status');
+  if(!el) return;
+  el.textContent = `የተያያዙ ፎቶዎች — ዋራንቲ: ${warrantyImages.length}, ደረሰኝ: ${receiptImages.length}`;
+}
+
+window.removePhoto = function(kind, idx){
+  if(kind === 'warranty'){ warrantyImages.splice(idx,1); renderThumbs('warranty-preview', warrantyImages, 'warranty'); }
+  else{ receiptImages.splice(idx,1); renderThumbs('receipt-preview', receiptImages, 'receipt'); }
+};
+
+function clearUploads(){
+  warrantyImages = [];
+  receiptImages = [];
+  const wf = document.getElementById('f-warranty-file'); if(wf) wf.value = '';
+  const rf = document.getElementById('f-receipt-file'); if(rf) rf.value = '';
+  const wp = document.getElementById('warranty-preview'); if(wp) wp.innerHTML = '';
+  const rp = document.getElementById('receipt-preview'); if(rp) rp.innerHTML = '';
+  updateUploadStatus();
+}
+
+if(document.getElementById('f-warranty-file')){
+  document.getElementById('f-warranty-file').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files || []);
+    for(const f of files){
+      try{ warrantyImages.push(await compressImage(f)); }catch(err){ console.error(err); }
+    }
+    renderThumbs('warranty-preview', warrantyImages, 'warranty');
+    e.target.value = '';
+  });
+  document.getElementById('f-receipt-file').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files || []);
+    for(const f of files){
+      try{ receiptImages.push(await compressImage(f)); }catch(err){ console.error(err); }
+    }
+    renderThumbs('receipt-preview', receiptImages, 'receipt');
+    e.target.value = '';
+  });
+}
+
+async function saveReportImages(reportId){
+  if(warrantyImages.length === 0 && receiptImages.length === 0) return;
+  try{
+    await window.storage.set('report-images:' + reportId, JSON.stringify({warrantyImages, receiptImages}), true);
+  }catch(e){
+    console.error('Image storage error', e);
+  }
+}
+
+async function loadReportImages(reportId){
+  try{
+    const res = await window.storage.get('report-images:' + reportId, true);
+    return res && res.value ? JSON.parse(res.value) : null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function deleteReportImages(reportId){
+  try{ await window.storage.delete('report-images:' + reportId, true); }
+  catch(e){ /* key may not exist, ignore */ }
+}
+
+async function loadUsers(){
+  try{
+    const res = await window.storage.get(USERS_KEY, true);
+    users = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ users = []; }
+}
+async function saveUsers(){
+  try{ await window.storage.set(USERS_KEY, JSON.stringify(users), true); }
+  catch(e){ console.error('Storage error', e); }
+}
+async function loadReports(){
+  try{
+    const res = await window.storage.get(REPORTS_KEY, true);
+    reports = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ reports = []; }
+}
+async function saveReports(){
+  try{ await window.storage.set(REPORTS_KEY, JSON.stringify(reports), true); }
+  catch(e){ console.error('Storage error', e); }
+}
+
+document.querySelectorAll('.auth-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-login').classList.toggle('hidden', tab.dataset.tab!=='login');
+    document.getElementById('tab-register').classList.toggle('hidden', tab.dataset.tab!=='register');
+    document.getElementById('auth-error').style.display='none';
+  });
+});
+
+function showAuthError(msg){
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+document.getElementById('btn-register').addEventListener('click', async ()=>{
+  const name = document.getElementById('reg-name').value.trim();
+  const id = document.getElementById('reg-id').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-pass').value;
+  const adminCode = document.getElementById('reg-admin-code').value;
+
+  if(!name || !id || !pass){ showAuthError('እባክዎ ስም፣ ስልክ/ኢሜል እና የይለፍ ቃል ይሙሉ።'); return; }
+  if(pass.length < 4){ showAuthError('የይለፍ ቃል ቢያንስ 4 ፊደል/ቁጥር ይያዝ።'); return; }
+  if(users.find(u=>u.id===id)){ showAuthError('ይህ ስልክ/ኢሜል ቀድሞ ተመዝግቧል። ግቡ (Login) የሚለውን ይጠቀሙ።'); return; }
+
+  const passwordHash = await sha256(pass);
+  const isAdmin = adminCode.trim() === ADMIN_SECRET;
+  const user = { id, name, passwordHash, isAdmin };
+  users.push(user);
+  await saveUsers();
+  currentUser = user;
+  enterApp();
+});
+
+document.getElementById('btn-login').addEventListener('click', async ()=>{
+  const id = document.getElementById('login-id').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  if(!id || !pass){ showAuthError('እባክዎ ስልክ/ኢሜል እና የይለፍ ቃል ያስገቡ።'); return; }
+  const user = users.find(u=>u.id===id);
+  if(!user){ showAuthError('ተጠቃሚ አልተገኘም። መጀመሪያ ይመዝገቡ።'); return; }
+  const passwordHash = await sha256(pass);
+  if(passwordHash !== user.passwordHash){ showAuthError('የይለፍ ቃል ትክክል አይደለም።'); return; }
+  currentUser = user;
+  enterApp();
+});
+
+document.getElementById('btn-logout').addEventListener('click', ()=>{
+  currentUser = null;
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('login-id').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('profile-section').classList.add('hidden');
+});
+
+document.getElementById('btn-toggle-profile').addEventListener('click', ()=>{
+  const sec = document.getElementById('profile-section');
+  const opening = sec.classList.contains('hidden');
+  sec.classList.toggle('hidden');
+  if(opening){
+    document.getElementById('pf-name').value = currentUser.name;
+    document.getElementById('pf-current-pass').value = '';
+    document.getElementById('pf-new-pass').value = '';
+    document.getElementById('pf-new-pass2').value = '';
+    document.getElementById('profile-error').style.display='none';
+    document.getElementById('profile-success').style.display='none';
+  }
+});
+
+document.getElementById('btn-save-profile').addEventListener('click', async ()=>{
+  const errEl = document.getElementById('profile-error');
+  const okEl = document.getElementById('profile-success');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  const newName = document.getElementById('pf-name').value.trim();
+  const currentPass = document.getElementById('pf-current-pass').value;
+  const newPass = document.getElementById('pf-new-pass').value;
+  const newPass2 = document.getElementById('pf-new-pass2').value;
+
+  if(!newName){ errEl.textContent='ስም ባዶ መሆን የለበትም።'; errEl.style.display='block'; return; }
+
+  const userRef = users.find(u=>u.id===currentUser.id);
+  if(!userRef){ errEl.textContent='ችግር ተፈጥሯል፣ እንደገና ይግቡ።'; errEl.style.display='block'; return; }
+
+  if(newPass || newPass2 || currentPass){
+    if(!currentPass){ errEl.textContent='የይለፍ ቃል ለመቀየር የአሁኑን የይለፍ ቃል ያስገቡ።'; errEl.style.display='block'; return; }
+    const currentHash = await sha256(currentPass);
+    if(currentHash !== userRef.passwordHash){ errEl.textContent='የአሁኑ የይለፍ ቃል ትክክል አይደለም።'; errEl.style.display='block'; return; }
+    if(newPass){
+      if(newPass.length < 4){ errEl.textContent='አዲስ የይለፍ ቃል ቢያንስ 4 ፊደል/ቁጥር ይያዝ።'; errEl.style.display='block'; return; }
+      if(newPass !== newPass2){ errEl.textContent='አዲስ የይለፍ ቃል ግጥሚያ የለውም።'; errEl.style.display='block'; return; }
+      userRef.passwordHash = await sha256(newPass);
+    }
+  }
+
+  userRef.name = newName;
+  currentUser.name = newName;
+  await saveUsers();
+
+  document.getElementById('who-name').textContent = currentUser.name;
+  reports.forEach(r=>{ if(r.workerId === currentUser.id) r.workerName = currentUser.name; });
+  await saveReports();
+  if(currentUser.isAdmin){ populateWorkerFilter(); renderUsersList(); }
+  renderHistory();
+
+  document.getElementById('pf-current-pass').value = '';
+  document.getElementById('pf-new-pass').value = '';
+  document.getElementById('pf-new-pass2').value = '';
+  okEl.style.display='block';
+});
+
+function renderUsersList(){
+  const box = document.getElementById('users-list');
+  if(!box) return;
+  if(users.length === 0){
+    box.innerHTML = '<div class="empty">ምንም የተመዘገበ ተጠቃሚ የለም።</div>';
+    return;
+  }
+  box.innerHTML = users.map(u => `
+    <div class="hist-item">
+      <div class="meta">${escapeAttr(u.name)} — ${escapeAttr(u.id)} ${u.isAdmin ? '<span class="badge-admin">አድሚን</span>' : '<span class="badge-worker">ሠራተኛ</span>'}</div>
+      <div class="hist-actions">
+        ${u.id === currentUser.id ? '<span style="font-size:11.5px;color:var(--text-3);">(እርስዎ)</span>' : `<button type="button" class="ghost small" onclick="removeUser('${u.id}')">አጥፋ</button>`}
+      </div>
+    </div>
+  `).join('');
+}
+
+window.removeUser = async function(id){
+  if(!currentUser.isAdmin) return;
+  users = users.filter(u=>u.id!==id);
+  await saveUsers();
+  renderUsersList();
+  if(document.getElementById('f-filter-worker')) populateWorkerFilter();
+};
+
+function enterApp(){
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+  document.getElementById('who-name').textContent = currentUser.name;
+  document.getElementById('who-badge').innerHTML = currentUser.isAdmin
+    ? '<span class="badge-admin">አድሚን</span>'
+    : '<span class="badge-worker">ሠራተኛ</span>';
+  document.getElementById('admin-section').classList.toggle('hidden', !currentUser.isAdmin);
+  document.getElementById('history-title').textContent = currentUser.isAdmin ? 'ሁሉም ሪፖርቶች' : 'የኔ ያለፉ ሪፖርቶች';
+
+  document.getElementById('f-date').value = todayISO();
+  updateDayName();
+  renderJobs();
+  updateFinance();
+  if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); renderUsersList(); }
+  renderHistory();
+}
+
+function updateDayName(){
+  const val = document.getElementById('f-date').value;
+  if(!val){ document.getElementById('f-day').value=''; return; }
+  const d = new Date(val + 'T00:00:00');
+  document.getElementById('f-day').value = DAYS_AM[d.getDay()];
+}
+document.getElementById('f-date').addEventListener('change', updateDayName);
+
+function renderJobs(){
+  const count = Math.max(0, parseInt(document.getElementById('f-jobcount').value || '0'));
+  const container = document.getElementById('jobs');
+  const existing = container.querySelectorAll('.job');
+  const prevStates = Array.from(existing).map(j => ({
+    status: j.dataset.status || '',
+    reason: j.querySelector('.job-reason input') ? j.querySelector('.job-reason input').value : '',
+    name: j.querySelector('.job-name input') ? j.querySelector('.job-name input').value : ''
+  }));
+
+  if(count === 0){
+    container.innerHTML = '<div class="empty">ከላይ የተላኩ ስራዎች ብዛት ያስገቡ።</div>';
+    updateCounts();
+    return;
+  }
+
+  container.innerHTML = '';
+  for(let i=1; i<=count; i++){
+    const prev = prevStates[i-1] || {status:'', reason:'', name:''};
+    const div = document.createElement('div');
+    div.className = 'job';
+    div.dataset.status = prev.status;
+    div.dataset.index = i;
+    div.innerHTML = `
+      <div class="job-top">
+        <div class="job-num">${i}.</div>
+        <div class="job-name"><input type="text" placeholder="የስራ ስም ወይም የደንበኛ ስም" value="${escapeAttr(prev.name)}"></div>
+        <div class="toggle-group">
+          <div class="toggle yes ${prev.status==='yes'?'active-yes':''}">✅</div>
+          <div class="toggle no ${prev.status==='no'?'active-no':''}">❌</div>
+        </div>
+      </div>
+      <div class="job-reason ${prev.status==='no'?'show':''}">
+        <input type="text" placeholder="ካልተጠናቀቀ ምክንያቱ..." value="${escapeAttr(prev.reason)}">
+      </div>
+    `;
+    container.appendChild(div);
+  }
+  updateCounts();
+}
+
+document.getElementById('jobs').addEventListener('click', (e)=>{
+  const t = e.target.closest('.toggle');
+  if(!t) return;
+  const job = t.closest('.job');
+  const isYes = t.classList.contains('yes');
+  job.dataset.status = isYes ? 'yes' : 'no';
+  job.querySelectorAll('.toggle').forEach(x=>{x.classList.remove('active-yes','active-no');});
+  t.classList.add(isYes ? 'active-yes' : 'active-no');
+  const reasonBox = job.querySelector('.job-reason');
+  if(isYes){ reasonBox.classList.remove('show'); }
+  else{ reasonBox.classList.add('show'); }
+  updateCounts();
+});
+
+function updateCounts(){
+  const jobs = document.querySelectorAll('.job');
+  let done=0, notdone=0;
+  jobs.forEach(j=>{
+    if(j.dataset.status==='yes') done++;
+    else if(j.dataset.status==='no') notdone++;
+  });
+  document.getElementById('r-done').textContent = done;
+  document.getElementById('r-notdone').textContent = notdone;
+}
+
+document.getElementById('f-jobcount').addEventListener('input', renderJobs);
+
+function updateFinance(){
+  const income = Number(document.getElementById('f-income').value)||0;
+  const expense = Number(document.getElementById('f-expense').value)||0;
+  const share = Number(document.getElementById('f-share').value)||0;
+  const profit = income - expense;
+  const shareAmt = profit * (share/100);
+  const company = profit - shareAmt;
+  document.getElementById('r-profit').textContent = money(profit);
+  document.getElementById('r-share-amt').textContent = money(shareAmt);
+  document.getElementById('r-company').textContent = money(company);
+}
+['f-income','f-expense','f-share'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateFinance);
+});
+
+function buildReportText(){
+  const worker = currentUser ? currentUser.name : '—';
+  const date = document.getElementById('f-date').value;
+  const day = document.getElementById('f-day').value;
+  const jobcount = document.getElementById('f-jobcount').value || 0;
+  const done = document.getElementById('r-done').textContent;
+  const notdone = document.getElementById('r-notdone').textContent;
+  const income = document.getElementById('f-income').value || 0;
+  const expense = document.getElementById('f-expense').value || 0;
+  const expenseDetail = document.getElementById('f-expense-detail').value.trim();
+  const profit = document.getElementById('r-profit').textContent;
+  const share = document.getElementById('f-share').value || 0;
+  const company = document.getElementById('r-company').textContent;
+  const notes = document.getElementById('f-notes').value.trim();
+  const warranty = warrantyImages.length > 0 ? `✅ ተያይዟል (${warrantyImages.length} ፎቶ)` : '❌ አልተያያዘም';
+  const receipt = receiptImages.length > 0 ? `✅ ተያይዟል (${receiptImages.length} ፎቶ)` : '❌ አልተያያዘም';
+
+  let jobsText = '';
+  document.querySelectorAll('.job').forEach((j, idx)=>{
+    const name = j.querySelector('.job-name input').value.trim();
+    const status = j.dataset.status === 'yes' ? '✅' : (j.dataset.status === 'no' ? '❌' : '➖');
+    const reason = j.querySelector('.job-reason input') ? j.querySelector('.job-reason input').value.trim() : '';
+    jobsText += `${idx+1}. ${name ? name + ' — ' : ''}${status}\n`;
+    if(status === '❌'){
+      jobsText += `ካልተጠናቀቀ ምክንያቱ: ${reason || '—'}\n`;
+    }
+  });
+
+  return `📋 የሀላል ዕለታዊ የባለሙያ ሪፖርት
+
+👷 የባለሙያ ስም: ${worker}
+📅 ቀን: ${date}
+📆 ዕለት: ${day}
+
+1️⃣ የተላኩ ስራዎች ብዛት: ${jobcount}
+2️⃣ የተጠናቀቁ ስራዎች ብዛት: ${done}
+3️⃣ ያልተጠናቀቁ ስራዎች ብዛት: ${notdone}
+
+📋 የስራ ዝርዝር
+${jobsText}
+💰 5️⃣ ጠቅላላ ገቢ: ${income} ብር
+🧾 6️⃣ ጠቅላላ ወጪ: ${expense} ብር
+የወጪ ዝርዝር: ${expenseDetail || '—'}
+
+💵 7️⃣ ጠቅላላ ትርፍ: ${profit} ብር
+📊 8️⃣ የባለሙያ ድርሻ (%): ${share}%
+🏦 9️⃣ ወደ ድርጅቱ የገባ ገንዘብ: ${company} ብር
+
+🎤 🔟 ተጨማሪ ማብራሪያ / አስተያየት:
+${notes || '—'}
+
+የድርጅቱ ጊዜያዊ የገቢ አካውንት
+1000422578068
+Fuad Museyd Hassen
+
+📌 ተጨማሪ ማያያዝ ወይም መላክ ያለባቸው
+${warranty} — የዋራንቲ ካርድ እና ሎጎ ፎቶ
+${receipt} — የባንክ ደረሰኝ`;
+}
+
+document.getElementById('btn-generate').addEventListener('click', ()=>{
+  document.getElementById('output').textContent = buildReportText();
+});
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const msg = document.getElementById('copy-msg');
+    if(msg){ msg.style.display='block'; setTimeout(()=>{msg.style.display='none';}, 2000); }
+  }).catch(()=>{});
+}
+document.getElementById('btn-copy-acct').addEventListener('click', ()=> copyText('1000422578068'));
+document.getElementById('btn-copy').addEventListener('click', ()=>{
+  copyText(document.getElementById('output').textContent);
+});
+
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  document.getElementById('f-date').value = todayISO();
+  updateDayName();
+  document.getElementById('f-jobcount').value = 0;
+  renderJobs();
+  document.getElementById('f-income').value = 0;
+  document.getElementById('f-expense').value = 0;
+  document.getElementById('f-expense-detail').value = '';
+  document.getElementById('f-share').value = 0;
+  document.getElementById('f-notes').value = '';
+  clearUploads();
+  updateFinance();
+  document.getElementById('output').textContent = 'ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።';
+  const gal = document.getElementById('view-gallery'); if(gal) gal.innerHTML = '';
+});
+
+function populateWorkerFilter(){
+  const sel = document.getElementById('f-filter-worker');
+  const names = Array.from(new Set(reports.map(r=>r.workerName).filter(Boolean))).sort();
+  const current = sel.value;
+  sel.innerHTML = '<option value="">ሁሉም ባለሙያዎች</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+  sel.value = current;
+}
+
+function visibleReports(){
+  let list = currentUser.isAdmin ? reports.slice() : reports.filter(r=>r.workerId === currentUser.id);
+  if(currentUser.isAdmin){
+    const worker = document.getElementById('f-filter-worker').value;
+    const fromDate = document.getElementById('f-filter-date').value;
+    if(worker) list = list.filter(r=>r.workerName === worker);
+    if(fromDate) list = list.filter(r=>r.date >= fromDate);
+  }
+  return list;
+}
+
+function renderDashboard(){
+  const items = visibleReports();
+  const income = items.reduce((s,r)=>s + (Number(r.income)||0), 0);
+  const profit = items.reduce((s,r)=>s + (Number((r.profit+'').replace(/,/g,''))||0), 0);
+  const company = items.reduce((s,r)=>s + (Number((r.company+'').replace(/,/g,''))||0), 0);
+  document.getElementById('d-count').textContent = items.length;
+  document.getElementById('d-income').textContent = money(income);
+  document.getElementById('d-profit').textContent = money(profit);
+  document.getElementById('d-company').textContent = money(company);
+}
+
+if(document.getElementById('f-filter-worker')){
+  document.getElementById('f-filter-worker').addEventListener('change', ()=>{renderDashboard(); renderHistory();});
+  document.getElementById('f-filter-date').addEventListener('change', ()=>{renderDashboard(); renderHistory();});
+}
+
+function renderHistory(){
+  const box = document.getElementById('history');
+  const items = visibleReports().slice().sort((a,b)=> b.date.localeCompare(a.date));
+  if(items.length === 0){
+    box.innerHTML = '<div class="empty">ገና ምንም ያለፈ ሪፖርት አልተቀመጠም።</div>';
+    return;
+  }
+  box.innerHTML = items.map(r => `
+    <div class="hist-item">
+      <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · ' + escapeAttr(r.workerName) : ''} · ${r.jobcount} ስራዎች · ትርፍ ${r.profit} ብር${((r.warrantyCount||0)+(r.receiptCount||0))>0 ? ' · 📎 ' + ((r.warrantyCount||0)+(r.receiptCount||0)) : ''}</div>
+      <div class="hist-actions">
+        <button type="button" class="ghost small" onclick="viewHistory('${r.id}')">ተመልከት</button>
+        <button type="button" class="ghost small" onclick="deleteHistory('${r.id}')">ሰርዝ</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btn-save').addEventListener('click', async ()=>{
+  const text = buildReportText();
+  const reportId = Date.now().toString();
+  const entry = {
+    id: reportId,
+    workerId: currentUser.id,
+    workerName: currentUser.name,
+    date: document.getElementById('f-date').value,
+    day: document.getElementById('f-day').value,
+    jobcount: document.getElementById('f-jobcount').value || 0,
+    income: document.getElementById('f-income').value || 0,
+    profit: document.getElementById('r-profit').textContent,
+    company: document.getElementById('r-company').textContent,
+    warrantyCount: warrantyImages.length,
+    receiptCount: receiptImages.length,
+    text
+  };
+  await saveReportImages(reportId);
+  reports.push(entry);
+  await saveReports();
+  if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); }
+  renderHistory();
+});
+
+window.viewHistory = async function(id){
+  const r = reports.find(x=>x.id===id);
+  if(!r) return;
+  if(!currentUser.isAdmin && r.workerId !== currentUser.id) return;
+  document.getElementById('output').textContent = r.text;
+  document.getElementById('output').scrollIntoView({behavior:'smooth'});
+
+  const galleryBox = document.getElementById('view-gallery');
+  if(galleryBox){
+    galleryBox.innerHTML = '<div class="hint">ፎቶ በመጫን ላይ...</div>';
+    const imgs = await loadReportImages(id);
+    if(!imgs || (imgs.warrantyImages.length===0 && imgs.receiptImages.length===0)){
+      galleryBox.innerHTML = '';
+      return;
+    }
+    let html = '';
+    if(imgs.warrantyImages.length){
+      html += '<div class="hint" style="margin-top:10px;">ዋራንቲ ፎቶዎች</div><div class="thumb-row">' +
+        imgs.warrantyImages.map(src=>`<div class="thumb-view"><img src="${src}"></div>`).join('') + '</div>';
+    }
+    if(imgs.receiptImages.length){
+      html += '<div class="hint" style="margin-top:10px;">የደረሰኝ ፎቶዎች</div><div class="thumb-row">' +
+        imgs.receiptImages.map(src=>`<div class="thumb-view"><img src="${src}"></div>`).join('') + '</div>';
+    }
+    galleryBox.innerHTML = html;
+  }
+};
+
+window.deleteHistory = async function(id){
+  const r = reports.find(x=>x.id===id);
+  if(!r) return;
+  if(!currentUser.isAdmin && r.workerId !== currentUser.id) return;
+  reports = reports.filter(x=>x.id!==id);
+  await saveReports();
+  await deleteReportImages(id);
+  if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); }
+  renderHistory();
+};
+
+(async function init(){
+  await loadUsers();
+  await loadReports();
+})();
+</script>
+</body>
+</html>
