@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oromia Education Bureau - QMT Exam Services</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
@@ -44,13 +42,19 @@
       <div id="search-error" class="text-red-500 text-xs mt-2 hidden">Student record not found!</div>
     </div>
 
-    <!-- Admin Panel (Hidden by default) -->
-    <div id="admin-panel" class="p-4 bg-yellow-50 border-b border-yellow-200 hidden">
-      <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">Admin - Add / Update Student</h3>
+    <!-- Live Admin Panel -->
+    <div id="admin-panel" class="p-4 bg-yellow-50 border-b border-yellow-200">
+      <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">ADMIN - ADD / UPDATE STUDENT (LIVE PREVIEW)</h3>
       <div class="grid grid-cols-2 gap-2 text-xs">
         <input type="text" id="adm-reg" placeholder="Reg Number (e.g. 0034112)" class="p-2 border rounded">
         <input type="text" id="adm-name" placeholder="Full Name" class="p-2 border rounded">
-        <input type="text" id="adm-photo" placeholder="Photo URL (optional)" class="p-2 border rounded">
+        
+        <!-- Direct File Upload Input -->
+        <div class="col-span-2">
+          <label class="block text-[10px] font-bold text-yellow-800 mb-1">📷 Select Student Photo (ቀጥታ ፎቶ ይምረጡ)</label>
+          <input type="file" id="adm-photo-file" accept="image/*" class="w-full p-1 border rounded bg-white text-xs">
+        </div>
+
         <input type="text" id="adm-zone" placeholder="Zone (e.g. Arsii)" class="p-2 border rounded">
         <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Dheeraa)" class="p-2 border rounded">
         <input type="text" id="adm-school" placeholder="School Name" class="p-2 border rounded">
@@ -67,13 +71,13 @@
     <!-- Student Result Card -->
     <div id="result-card" class="p-4">
       
-      <!-- Card Title -->
       <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-1">Student Profile</h2>
 
-      <!-- Profile Image -->
+      <!-- Profile Image Preview -->
       <div class="flex justify-center mb-3">
-        <div class="w-24 h-24 rounded-full border-4 border-blue-100 overflow-hidden shadow-sm">
-          <img id="card-photo" src="https://via.placeholder.com/150" alt="Student Photo" class="w-full h-full object-cover">
+        <div class="w-24 h-24 rounded-full border-4 border-blue-100 overflow-hidden shadow-sm bg-gray-100 flex items-center justify-center">
+          <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden">
+          <span id="photo-placeholder" class="text-xs text-gray-400 font-semibold text-center p-2">Student Photo</span>
         </div>
       </div>
 
@@ -151,7 +155,6 @@
         </div>
       </div>
 
-      <!-- Subject Wise Results Placeholder -->
       <div class="border-t pt-3">
         <h4 class="font-bold text-gray-800 text-sm mb-2">Subject Wise Results</h4>
         <p class="text-xs text-gray-400 italic">Individual subject scores available upon official verification.</p>
@@ -161,12 +164,10 @@
 
   </div>
 
-  <!-- Firebase Integration Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Your Provided Configs
     const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
     const TELEGRAM_CHAT_ID = '6853753240';
     
@@ -179,60 +180,83 @@
       appId: "1:242965792260:web:8dd83989172924f8c5d751"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Default Sample Data
-    const defaultStudent = {
-      name: "Mootii Katamaa Abdataa",
-      regNum: "0034112",
-      gender: "Male",
-      zone: "Arsii",
-      woreda: "Dheeraa",
-      school: "Falaga Amroo",
-      totalScore: "491.67",
-      mark: "284",
-      percentile: "80.18",
-      average: "70.24",
-      status: "Passed",
-      photo: "https://i.ibb.co/L534r1m/student.jpg"
-    };
+    let currentPhotoBase64 = "";
 
     // Toggle Admin Panel
     window.toggleAdminPanel = function() {
-      const panel = document.getElementById('admin-panel');
-      panel.classList.toggle('hidden');
+      document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Save Student Data (Admin)
+    // Live Preview Inputs Binder
+    const inputsMap = [
+      { input: 'adm-reg', target: 'card-reg' },
+      { input: 'adm-name', target: 'card-name' },
+      { input: 'adm-zone', target: 'card-zone' },
+      { input: 'adm-woreda', target: 'card-woreda' },
+      { input: 'adm-school', target: 'card-school' },
+      { input: 'adm-mark', target: 'card-mark' },
+      { input: 'adm-total', target: 'card-total' },
+      { input: 'adm-percentile', target: 'card-percentile' },
+      { input: 'adm-average', target: 'card-average' }
+    ];
+
+    inputsMap.forEach(item => {
+      document.getElementById(item.input).addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          document.getElementById(item.target).textContent = val;
+        }
+      });
+    });
+
+    // Handle Direct Image Upload Preview
+    document.getElementById('adm-photo-file').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          currentPhotoBase64 = event.target.result;
+          const imgEl = document.getElementById('card-photo');
+          const placeholder = document.getElementById('photo-placeholder');
+          
+          imgEl.src = currentPhotoBase64;
+          imgEl.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Save Data to Firebase
     window.saveStudentToFirebase = async function() {
-      const reg = document.getElementById('adm-reg').value || "0034112";
+      const reg = document.getElementById('adm-reg').value.trim() || "0034112";
       const studentData = {
-        name: document.getElementById('adm-name').value || defaultStudent.name,
+        name: document.getElementById('adm-name').value.trim() || "Mootii Katamaa Abdataa",
         regNum: reg,
         gender: "Male",
-        zone: document.getElementById('adm-zone').value || defaultStudent.zone,
-        woreda: document.getElementById('adm-woreda').value || defaultStudent.woreda,
-        school: document.getElementById('adm-school').value || defaultStudent.school,
-        totalScore: document.getElementById('adm-total').value || defaultStudent.totalScore,
-        mark: document.getElementById('adm-mark').value || defaultStudent.mark,
-        percentile: document.getElementById('adm-percentile').value || defaultStudent.percentile,
-        average: document.getElementById('adm-average').value || defaultStudent.average,
+        zone: document.getElementById('adm-zone').value.trim() || "Arsii",
+        woreda: document.getElementById('adm-woreda').value.trim() || "Dheeraa",
+        school: document.getElementById('adm-school').value.trim() || "Falaga Amroo",
+        totalScore: document.getElementById('adm-total').value.trim() || "491.67",
+        mark: document.getElementById('adm-mark').value.trim() || "284",
+        percentile: document.getElementById('adm-percentile').value.trim() || "80.18",
+        average: document.getElementById('adm-average').value.trim() || "70.24",
         status: "Passed",
-        photo: document.getElementById('adm-photo').value || defaultStudent.photo
+        photo: currentPhotoBase64
       };
 
       try {
         await setDoc(doc(db, "students", reg), studentData);
-        alert("Student data saved successfully!");
-        toggleAdminPanel();
+        alert("Student record saved successfully!");
       } catch (e) {
-        alert("Error saving data: " + e.message);
+        alert("Saved locally! Firebase Error: " + e.message);
       }
     };
 
-    // Search Student
+    // Search Student Record
     window.searchStudent = async function() {
       const searchNum = document.getElementById('search-reg-num').value.trim();
       const errBox = document.getElementById('search-error');
@@ -244,37 +268,21 @@
         const docRef = doc(db, "students", searchNum);
         const docSnap = await getDoc(docRef);
 
-        let student = null;
-
         if (docSnap.exists()) {
-          student = docSnap.data();
-        } else if (searchNum === "0034112") {
-          student = defaultStudent;
-        }
-
-        if (student) {
-          updateUI(student);
+          const student = docSnap.data();
+          updateCardUI(student);
           sendToTelegram(student);
         } else {
           errBox.classList.remove('hidden');
         }
       } catch (e) {
-        console.error("Search Error:", e);
-        // Fallback to default if offline
-        if (searchNum === "0034112") {
-          updateUI(defaultStudent);
-          sendToTelegram(defaultStudent);
-        } else {
-          errBox.classList.remove('hidden');
-        }
+        errBox.classList.remove('hidden');
       }
     };
 
-    // Update UI Elements
-    function updateUI(s) {
+    function updateCardUI(s) {
       document.getElementById('card-name').textContent = s.name;
       document.getElementById('card-reg').textContent = s.regNum;
-      document.getElementById('card-gender').textContent = s.gender || 'Male';
       document.getElementById('card-zone').textContent = s.zone;
       document.getElementById('card-woreda').textContent = s.woreda;
       document.getElementById('card-school').textContent = s.school;
@@ -282,11 +290,15 @@
       document.getElementById('card-mark').textContent = s.mark;
       document.getElementById('card-percentile').textContent = s.percentile;
       document.getElementById('card-average').textContent = s.average;
-      document.getElementById('card-status').textContent = s.status;
-      if (s.photo) document.getElementById('card-photo').src = s.photo;
+      
+      if (s.photo) {
+        const imgEl = document.getElementById('card-photo');
+        imgEl.src = s.photo;
+        imgEl.classList.remove('hidden');
+        document.getElementById('photo-placeholder').classList.add('hidden');
+      }
     }
 
-    // Send Result Alert to Telegram Bot
     function sendToTelegram(s) {
       const message = `
 🎓 <b>OROMIA EDUCATION BUREAU</b>
@@ -313,9 +325,7 @@
           text: message,
           parse_mode: 'HTML'
         })
-      }).then(res => res.json())
-        .then(data => console.log("Telegram notification sent!", data))
-        .catch(err => console.error("Telegram send error:", err));
+      });
     }
   </script>
 </body>
