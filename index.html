@@ -6,6 +6,8 @@
   <title>Oromia Education Bureau - QMT Exam Services</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2canvas Library for Downloading Card -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
   </style>
@@ -58,6 +60,9 @@
         <input type="text" id="adm-zone" placeholder="Zone (e.g. Arsii)" class="p-2 border rounded">
         <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Dheeraa)" class="p-2 border rounded">
         <input type="text" id="adm-school" placeholder="School Name" class="p-2 border rounded">
+        <!-- Academic Year (ዓመተ ምሕረት) -->
+        <input type="text" id="adm-year" placeholder="Academic Year (e.g. 2017 E.C)" class="p-2 border rounded">
+        
         <input type="number" id="adm-mark" placeholder="Mark (e.g. 284)" class="p-2 border rounded">
         <input type="number" id="adm-total" placeholder="Total Score (e.g. 491.67)" class="p-2 border rounded">
         <input type="number" id="adm-percentile" placeholder="Percentile (e.g. 80.18)" class="p-2 border rounded">
@@ -68,8 +73,8 @@
       </button>
     </div>
 
-    <!-- Student Result Card -->
-    <div id="result-card" class="p-4">
+    <!-- Student Result Card (Target for Download) -->
+    <div id="result-card" class="p-4 bg-white">
       
       <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-1">Student Profile</h2>
 
@@ -115,7 +120,7 @@
 
         <div>
           <span class="text-gray-400 block font-medium">Academic Year</span>
-          <span class="text-gray-800 font-bold">2017 E.C</span>
+          <span id="card-year" class="text-gray-800 font-bold">2017 E.C</span>
         </div>
         <div>
           <span class="text-gray-400 block font-medium">School</span>
@@ -162,6 +167,13 @@
 
     </div>
 
+    <!-- Download Button Section -->
+    <div class="p-4 border-t bg-gray-50 flex justify-center">
+      <button onclick="downloadResultCard()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-file-arrow-down text-sm"></i> Download Result Card (ውጤት አውርድ)
+      </button>
+    </div>
+
   </div>
 
   <script type="module">
@@ -185,18 +197,18 @@
 
     let currentPhotoBase64 = "";
 
-    // Toggle Admin Panel
     window.toggleAdminPanel = function() {
       document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Live Preview Inputs Binder
+    // Live Input Binder including Academic Year
     const inputsMap = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
       { input: 'adm-zone', target: 'card-zone' },
       { input: 'adm-woreda', target: 'card-woreda' },
       { input: 'adm-school', target: 'card-school' },
+      { input: 'adm-year', target: 'card-year' },
       { input: 'adm-mark', target: 'card-mark' },
       { input: 'adm-total', target: 'card-total' },
       { input: 'adm-percentile', target: 'card-percentile' },
@@ -212,7 +224,7 @@
       });
     });
 
-    // Handle Direct Image Upload Preview
+    // File Upload Handler
     document.getElementById('adm-photo-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -230,6 +242,19 @@
       }
     });
 
+    // Download Result Card Function
+    window.downloadResultCard = function() {
+      const card = document.getElementById('result-card');
+      const regNum = document.getElementById('card-reg').textContent || "student";
+      
+      html2canvas(card, { scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Student_Result_${regNum}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    };
+
     // Save Data to Firebase
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "0034112";
@@ -240,6 +265,7 @@
         zone: document.getElementById('adm-zone').value.trim() || "Arsii",
         woreda: document.getElementById('adm-woreda').value.trim() || "Dheeraa",
         school: document.getElementById('adm-school').value.trim() || "Falaga Amroo",
+        academicYear: document.getElementById('adm-year').value.trim() || "2017 E.C",
         totalScore: document.getElementById('adm-total').value.trim() || "491.67",
         mark: document.getElementById('adm-mark').value.trim() || "284",
         percentile: document.getElementById('adm-percentile').value.trim() || "80.18",
@@ -256,7 +282,7 @@
       }
     };
 
-    // Search Student Record
+    // Search Student
     window.searchStudent = async function() {
       const searchNum = document.getElementById('search-reg-num').value.trim();
       const errBox = document.getElementById('search-error');
@@ -286,6 +312,7 @@
       document.getElementById('card-zone').textContent = s.zone;
       document.getElementById('card-woreda').textContent = s.woreda;
       document.getElementById('card-school').textContent = s.school;
+      if (s.academicYear) document.getElementById('card-year').textContent = s.academicYear;
       document.getElementById('card-total').textContent = s.totalScore;
       document.getElementById('card-mark').textContent = s.mark;
       document.getElementById('card-percentile').textContent = s.percentile;
@@ -308,6 +335,7 @@
 🆔 <b>Reg No:</b> ${s.regNum}
 📍 <b>Zone:</b> ${s.zone}
 🏫 <b>School:</b> ${s.school}
+📅 <b>Year:</b> ${s.academicYear || '2017 E.C'}
 ----------------------------------
 📊 <b>Result Summary:</b>
 - <b>Total Score:</b> ${s.totalScore}
