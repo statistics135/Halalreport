@@ -12,7 +12,6 @@
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
     .label-title { color: #64748b; font-size: 0.8125rem; font-weight: 500; }
     .value-bold { color: #1e293b; font-size: 0.875rem; font-weight: 700; }
-    /* ቁጥሮቹ የበለጡ ደማቅ ሰማያዊ እንዲሆኑ ተደርገዋል */
     .score-blue { color: #0284c7 !important; font-weight: 800; font-size: 1.125rem; }
   </style>
 </head>
@@ -85,10 +84,10 @@
       
       <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-2">Student Profile</h2>
 
-      <!-- Profile Image -->
+      <!-- Profile Image Container with forced White Background -->
       <div class="flex justify-center mb-4">
-        <div class="w-24 h-24 rounded-full border-4 border-slate-100 overflow-hidden bg-gray-100 flex items-center justify-center">
-          <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden">
+        <div class="w-24 h-24 rounded-full border-4 border-slate-100 overflow-hidden bg-white flex items-center justify-center shadow-sm">
+          <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden" style="background-color: #ffffff;">
           <span id="photo-placeholder" class="text-xs text-gray-400 font-semibold text-center p-2">Student Photo</span>
         </div>
       </div>
@@ -158,11 +157,14 @@
           </div>
         </div>
 
+        <!-- Fixed Passed Badge HTML for Download Stability -->
         <div>
           <span class="label-title block mb-1">Status</span>
-          <div id="status-badge" style="background-color: #e0f2fe; color: #0284c7;" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border border-sky-100">
-            <i class="fa-solid fa-circle-check text-xs" style="color: #0284c7;"></i>
-            <span id="card-status" style="color: #0284c7;" class="font-bold">Passed</span>
+          <div id="status-badge" style="background-color: #e0f2fe !important; color: #0284c7 !important; display: inline-flex !important; align-items: center !important; padding: 6px 14px !important; border-radius: 9999px !important; border: 1px solid #bae6fd !important;">
+            <svg style="width: 14px; height: 14px; fill: #0284c7; margin-right: 6px;" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span id="card-status" style="color: #0284c7 !important; font-weight: 700 !important; font-size: 12px !important;">Passed</span>
           </div>
         </div>
       </div>
@@ -211,7 +213,7 @@
       document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Live Input Updates
+    // Live Inputs
     const inputsMap = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
@@ -243,21 +245,39 @@
       document.getElementById('card-gender').textContent = e.target.value;
     });
 
+    // File Upload Handler with Canvas White-Background Processing
     document.getElementById('adm-photo-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(event) {
-          currentPhotoBase64 = event.target.result;
-          const imgEl = document.getElementById('card-photo');
-          imgEl.src = currentPhotoBase64;
-          imgEl.classList.remove('hidden');
-          document.getElementById('photo-placeholder').classList.add('hidden');
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Fill canvas with solid white first
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw original image over white background
+            ctx.drawImage(img, 0, 0);
+
+            currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.95);
+            const imgEl = document.getElementById('card-photo');
+            imgEl.src = currentPhotoBase64;
+            imgEl.classList.remove('hidden');
+            document.getElementById('photo-placeholder').classList.add('hidden');
+          };
+          img.src = event.target.result;
         };
         reader.readAsDataURL(file);
       }
     });
 
+    // Download Function with High-Quality html2canvas Settings
     window.downloadResultCard = function() {
       const card = document.getElementById('result-card');
       const regNum = document.getElementById('card-reg').textContent || "student";
@@ -275,7 +295,7 @@
       });
     };
 
-    // Save Data & Trigger Telegram Image Upload
+    // Firebase Save & Automatic Telegram Image Send
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "0034112";
       let yearVal = document.getElementById('adm-year').value.trim() || "2017";
@@ -350,7 +370,7 @@
       }
     }
 
-    // Telegram API Image Sender Function
+    // Direct Canvas Image Upload to Telegram
     window.sendCardAsPhotoToTelegram = function() {
       const card = document.getElementById('result-card');
 
