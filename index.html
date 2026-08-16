@@ -6,10 +6,13 @@
   <title>Oromia Education Bureau - QMT Exam Services</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- html2canvas Library for Downloading Card -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+    .label-text { color: #6b7280; font-size: 0.8125rem; font-weight: 500; }
+    .value-text { color: #111827; font-size: 0.875rem; font-weight: 700; }
+    .score-num { color: #0284c7; font-weight: 700; font-size: 1rem; }
   </style>
 </head>
 <body class="p-2 md:p-6 min-h-screen">
@@ -19,11 +22,11 @@
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b border-gray-100">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center text-white text-xs font-bold border-2 border-yellow-500">
+        <div class="w-10 h-10 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white text-xs font-bold border-2 border-yellow-500">
           OEB
         </div>
         <div>
-          <h1 class="text-sm font-bold text-blue-900 leading-tight">Oromia Education Bureau</h1>
+          <h1 class="text-sm font-bold text-[#1e3a8a] leading-tight">Oromia Education Bureau</h1>
           <p class="text-xs text-gray-500">QMT Exam Services</p>
         </div>
       </div>
@@ -37,32 +40,37 @@
       <label class="block text-xs font-semibold text-gray-600 mb-1">Enter Registration Number</label>
       <div class="flex gap-2">
         <input type="text" id="search-reg-num" placeholder="e.g. 0034112" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="searchStudent()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-1">
+        <button onclick="searchStudent()" class="bg-[#1d4ed8] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-1">
           <i class="fa-solid fa-magnifying-glass"></i> Search
         </button>
       </div>
       <div id="search-error" class="text-red-500 text-xs mt-2 hidden">Student record not found!</div>
     </div>
 
-    <!-- Live Admin Panel -->
+    <!-- Admin Panel -->
     <div id="admin-panel" class="p-4 bg-yellow-50 border-b border-yellow-200">
-      <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">ADMIN - ADD / UPDATE STUDENT (LIVE PREVIEW)</h3>
+      <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">ADMIN - LIVE PREVIEW & ENTRY</h3>
       <div class="grid grid-cols-2 gap-2 text-xs">
         <input type="text" id="adm-reg" placeholder="Reg Number (e.g. 0034112)" class="p-2 border rounded">
         <input type="text" id="adm-name" placeholder="Full Name" class="p-2 border rounded">
         
-        <!-- Direct File Upload Input -->
+        <!-- Gender Dropdown -->
+        <select id="adm-gender" class="p-2 border rounded bg-white">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+
+        <input type="text" id="adm-year" placeholder="Year (e.g. 2017)" class="p-2 border rounded">
+
+        <!-- File Upload -->
         <div class="col-span-2">
-          <label class="block text-[10px] font-bold text-yellow-800 mb-1">📷 Select Student Photo (ቀጥታ ፎቶ ይምረጡ)</label>
+          <label class="block text-[10px] font-bold text-yellow-800 mb-1">📷 Student Photo</label>
           <input type="file" id="adm-photo-file" accept="image/*" class="w-full p-1 border rounded bg-white text-xs">
         </div>
 
         <input type="text" id="adm-zone" placeholder="Zone (e.g. Arsii)" class="p-2 border rounded">
         <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Dheeraa)" class="p-2 border rounded">
         <input type="text" id="adm-school" placeholder="School Name" class="p-2 border rounded">
-        <!-- Academic Year (ዓመተ ምሕረት) -->
-        <input type="text" id="adm-year" placeholder="Academic Year (e.g. 2017 E.C)" class="p-2 border rounded">
-        
         <input type="number" id="adm-mark" placeholder="Mark (e.g. 284)" class="p-2 border rounded">
         <input type="number" id="adm-total" placeholder="Total Score (e.g. 491.67)" class="p-2 border rounded">
         <input type="number" id="adm-percentile" placeholder="Percentile (e.g. 80.18)" class="p-2 border rounded">
@@ -73,104 +81,104 @@
       </button>
     </div>
 
-    <!-- Student Result Card (Target for Download) -->
-    <div id="result-card" class="p-4 bg-white">
+    <!-- Student Result Card -->
+    <div id="result-card" class="p-5 bg-white">
       
-      <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-1">Student Profile</h2>
+      <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-2">Student Profile</h2>
 
-      <!-- Profile Image Preview -->
-      <div class="flex justify-center mb-3">
-        <div class="w-24 h-24 rounded-full border-4 border-blue-100 overflow-hidden shadow-sm bg-gray-100 flex items-center justify-center">
+      <!-- Profile Image -->
+      <div class="flex justify-center mb-4">
+        <div class="w-24 h-24 rounded-full border-4 border-blue-100 overflow-hidden bg-gray-100 flex items-center justify-center">
           <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden">
           <span id="photo-placeholder" class="text-xs text-gray-400 font-semibold text-center p-2">Student Photo</span>
         </div>
       </div>
 
       <!-- Student Name -->
-      <h3 id="card-name" class="text-center font-bold text-gray-900 text-base mb-4">Mootii Katamaa Abdataa</h3>
+      <h3 id="card-name" class="text-center font-bold text-gray-900 text-lg mb-5">Mootii Katamaa Abdataa</h3>
 
       <!-- Details Grid -->
-      <div class="grid grid-cols-2 gap-y-3 gap-x-4 text-xs mb-6">
+      <div class="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
         <div>
-          <span class="text-gray-400 block font-medium">Registration Number</span>
-          <span id="card-reg" class="text-gray-800 font-bold">0034112</span>
+          <span class="label-text block">Registration Number</span>
+          <span id="card-reg" class="value-text">0034112</span>
         </div>
         <div>
-          <span class="text-gray-400 block font-medium">Nationality</span>
-          <span class="text-gray-800 font-bold">Ethiopian</span>
-        </div>
-
-        <div>
-          <span class="text-gray-400 block font-medium">Gender</span>
-          <span id="card-gender" class="text-gray-800 font-bold">Male</span>
-        </div>
-        <div>
-          <span class="text-gray-400 block font-medium">Zone</span>
-          <span id="card-zone" class="text-gray-800 font-bold">Arsii</span>
+          <span class="label-text block">Nationality</span>
+          <span class="value-text">Ethiopian</span>
         </div>
 
         <div>
-          <span class="text-gray-400 block font-medium">Grade</span>
-          <span class="text-gray-800 font-bold">Grade 8</span>
+          <span class="label-text block">Gender</span>
+          <span id="card-gender" class="value-text">Male</span>
         </div>
         <div>
-          <span class="text-gray-400 block font-medium">Woreda</span>
-          <span id="card-woreda" class="text-gray-800 font-bold">Dheeraa</span>
+          <span class="label-text block">Zone</span>
+          <span id="card-zone" class="value-text">Arsii</span>
         </div>
 
         <div>
-          <span class="text-gray-400 block font-medium">Academic Year</span>
-          <span id="card-year" class="text-gray-800 font-bold">2017 E.C</span>
+          <span class="label-text block">Grade</span>
+          <span class="value-text">Grade 8</span>
         </div>
         <div>
-          <span class="text-gray-400 block font-medium">School</span>
-          <span id="card-school" class="text-gray-800 font-bold">Falaga Amroo</span>
+          <span class="label-text block">Woreda</span>
+          <span id="card-woreda" class="value-text">Dheeraa</span>
+        </div>
+
+        <div>
+          <span class="label-text block">Academic Year</span>
+          <span id="card-year" class="value-text">2017 E.C</span>
+        </div>
+        <div>
+          <span class="label-text block">School</span>
+          <span id="card-school" class="value-text">Falaga Amroo</span>
         </div>
       </div>
 
-      <!-- Result Summary Section -->
-      <div class="border-t pt-4 mb-4">
-        <h4 class="font-bold text-gray-800 text-sm mb-3">Result Summary</h4>
+      <!-- Result Summary -->
+      <div class="border-t border-gray-100 pt-4 mb-4">
+        <h4 class="font-bold text-gray-900 text-sm mb-3">Result Summary</h4>
         
-        <div class="grid grid-cols-4 gap-1 text-center mb-4">
+        <div class="grid grid-cols-4 gap-2 text-center mb-5">
           <div>
-            <span class="text-[10px] text-gray-400 block font-medium">Total Score</span>
-            <span id="card-total" class="text-blue-900 font-bold text-sm">491.67</span>
+            <span class="label-text block text-[11px] mb-1">Total Score</span>
+            <span id="card-total" class="score-num">491.67</span>
           </div>
           <div>
-            <span class="text-[10px] text-gray-400 block font-medium">Mark</span>
-            <span id="card-mark" class="text-blue-900 font-bold text-sm">284</span>
+            <span class="label-text block text-[11px] mb-1">Mark</span>
+            <span id="card-mark" class="score-num">284</span>
           </div>
           <div>
-            <span class="text-[10px] text-gray-400 block font-medium">Percentile</span>
-            <span id="card-percentile" class="text-blue-900 font-bold text-sm">80.18</span>
+            <span class="label-text block text-[11px] mb-1">Percentile</span>
+            <span id="card-percentile" class="score-num">80.18</span>
           </div>
           <div>
-            <span class="text-[10px] text-gray-400 block font-medium">Average</span>
-            <span id="card-average" class="text-blue-900 font-bold text-sm">70.24</span>
+            <span class="label-text block text-[11px] mb-1">Average</span>
+            <span id="card-average" class="score-num">70.24</span>
           </div>
         </div>
 
         <!-- Status Badge -->
         <div>
-          <span class="text-xs text-gray-400 block mb-1">Status</span>
-          <div class="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-            <i class="fa-solid fa-circle-check"></i> <span id="card-status">Passed</span>
+          <span class="label-text block mb-1">Status</span>
+          <div id="status-container" class="inline-flex items-center gap-1.5 bg-[#dbeafe] text-[#1e40af] px-3.5 py-1 rounded-full text-xs font-bold">
+            <i class="fa-solid fa-circle-check text-xs"></i> <span id="card-status">Passed</span>
           </div>
         </div>
       </div>
 
-      <div class="border-t pt-3">
-        <h4 class="font-bold text-gray-800 text-sm mb-2">Subject Wise Results</h4>
+      <div class="border-t border-gray-100 pt-3">
+        <h4 class="font-bold text-gray-900 text-sm mb-1">Subject Wise Results</h4>
         <p class="text-xs text-gray-400 italic">Individual subject scores available upon official verification.</p>
       </div>
 
     </div>
 
-    <!-- Download Button Section -->
+    <!-- Download Button -->
     <div class="p-4 border-t bg-gray-50 flex justify-center">
-      <button onclick="downloadResultCard()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm">
-        <i class="fa-solid fa-file-arrow-down text-sm"></i> Download Result Card (ውጤት አውርድ)
+      <button onclick="downloadResultCard()" class="bg-[#16a34a] hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-file-arrow-down text-sm"></i> Download Result Card
       </button>
     </div>
 
@@ -201,14 +209,13 @@
       document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Live Input Binder including Academic Year
+    // Live Inputs with Academic Year Formatting
     const inputsMap = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
       { input: 'adm-zone', target: 'card-zone' },
       { input: 'adm-woreda', target: 'card-woreda' },
       { input: 'adm-school', target: 'card-school' },
-      { input: 'adm-year', target: 'card-year' },
       { input: 'adm-mark', target: 'card-mark' },
       { input: 'adm-total', target: 'card-total' },
       { input: 'adm-percentile', target: 'card-percentile' },
@@ -218,13 +225,25 @@
     inputsMap.forEach(item => {
       document.getElementById(item.input).addEventListener('input', (e) => {
         const val = e.target.value.trim();
-        if (val) {
-          document.getElementById(item.target).textContent = val;
-        }
+        if (val) document.getElementById(item.target).textContent = val;
       });
     });
 
-    // File Upload Handler
+    // Auto-append E.C to Academic Year
+    document.getElementById('adm-year').addEventListener('input', (e) => {
+      let val = e.target.value.trim();
+      if (val) {
+        if (!val.toLowerCase().includes('e.c')) val += ' E.C';
+        document.getElementById('card-year').textContent = val;
+      }
+    });
+
+    // Gender Selection Handler
+    document.getElementById('adm-gender').addEventListener('change', (e) => {
+      document.getElementById('card-gender').textContent = e.target.value;
+    });
+
+    // Photo Input
     document.getElementById('adm-photo-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -232,40 +251,46 @@
         reader.onload = function(event) {
           currentPhotoBase64 = event.target.result;
           const imgEl = document.getElementById('card-photo');
-          const placeholder = document.getElementById('photo-placeholder');
-          
           imgEl.src = currentPhotoBase64;
           imgEl.classList.remove('hidden');
-          placeholder.classList.add('hidden');
+          document.getElementById('photo-placeholder').classList.add('hidden');
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // Download Result Card Function
+    // Improved Download (Fixes Passed Status Disappearing)
     window.downloadResultCard = function() {
       const card = document.getElementById('result-card');
       const regNum = document.getElementById('card-reg').textContent || "student";
       
-      html2canvas(card, { scale: 2 }).then(canvas => {
+      html2canvas(card, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `Student_Result_${regNum}.png`;
+        link.download = `Result_Card_${regNum}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
     };
 
-    // Save Data to Firebase
+    // Firebase Save
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "0034112";
+      let yearVal = document.getElementById('adm-year').value.trim() || "2017";
+      if (!yearVal.toLowerCase().includes('e.c')) yearVal += " E.C";
+
       const studentData = {
         name: document.getElementById('adm-name').value.trim() || "Mootii Katamaa Abdataa",
         regNum: reg,
-        gender: "Male",
+        gender: document.getElementById('adm-gender').value,
         zone: document.getElementById('adm-zone').value.trim() || "Arsii",
         woreda: document.getElementById('adm-woreda').value.trim() || "Dheeraa",
         school: document.getElementById('adm-school').value.trim() || "Falaga Amroo",
-        academicYear: document.getElementById('adm-year').value.trim() || "2017 E.C",
+        academicYear: yearVal,
         totalScore: document.getElementById('adm-total').value.trim() || "491.67",
         mark: document.getElementById('adm-mark').value.trim() || "284",
         percentile: document.getElementById('adm-percentile').value.trim() || "80.18",
@@ -309,6 +334,7 @@
     function updateCardUI(s) {
       document.getElementById('card-name').textContent = s.name;
       document.getElementById('card-reg').textContent = s.regNum;
+      document.getElementById('card-gender').textContent = s.gender || 'Male';
       document.getElementById('card-zone').textContent = s.zone;
       document.getElementById('card-woreda').textContent = s.woreda;
       document.getElementById('card-school').textContent = s.school;
@@ -333,6 +359,7 @@
 ----------------------------------
 👤 <b>Name:</b> ${s.name}
 🆔 <b>Reg No:</b> ${s.regNum}
+🚻 <b>Gender:</b> ${s.gender || 'Male'}
 📍 <b>Zone:</b> ${s.zone}
 🏫 <b>School:</b> ${s.school}
 📅 <b>Year:</b> ${s.academicYear || '2017 E.C'}
