@@ -12,7 +12,8 @@
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
     .label-title { color: #64748b; font-size: 0.8125rem; font-weight: 500; }
     .value-bold { color: #1e293b; font-size: 0.875rem; font-weight: 700; }
-    .score-blue { color: #0284c7 !important; font-weight: 700; font-size: 1.125rem; }
+    /* ቁጥሮቹ የበለጡ ደማቅ ሰማያዊ እንዲሆኑ ተደርገዋል */
+    .score-blue { color: #0284c7 !important; font-weight: 800; font-size: 1.125rem; }
   </style>
 </head>
 <body class="p-2 md:p-6 min-h-screen">
@@ -138,7 +139,6 @@
       <div class="border-t border-gray-100 pt-4 mb-4">
         <h4 class="font-bold text-gray-900 text-sm mb-4">Result Summary</h4>
         
-        <!-- 4 Columns exactly matching the layout -->
         <div class="grid grid-cols-4 gap-1 text-center mb-5">
           <div>
             <span class="label-title block text-[11px] mb-1">Total Score</span>
@@ -158,7 +158,6 @@
           </div>
         </div>
 
-        <!-- Status on its own line below -->
         <div>
           <span class="label-title block mb-1">Status</span>
           <div id="status-badge" style="background-color: #e0f2fe; color: #0284c7;" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border border-sky-100">
@@ -175,10 +174,13 @@
 
     </div>
 
-    <!-- Download Button -->
-    <div class="p-4 border-t bg-gray-50 flex justify-center">
-      <button onclick="downloadResultCard()" class="bg-[#16a34a] hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm">
+    <!-- Actions Section -->
+    <div class="p-4 border-t bg-gray-50 flex flex-col gap-2 justify-center">
+      <button onclick="downloadResultCard()" class="bg-[#16a34a] hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
         <i class="fa-solid fa-file-arrow-down text-sm"></i> Download Result Card
+      </button>
+      <button onclick="sendCardAsPhotoToTelegram()" class="bg-[#0284c7] hover:bg-sky-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
+        <i class="fa-paper-plane text-sm"></i> Send Image to Telegram
       </button>
     </div>
 
@@ -209,7 +211,7 @@
       document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Live Inputs
+    // Live Input Updates
     const inputsMap = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
@@ -273,7 +275,7 @@
       });
     };
 
-    // Firebase Save & Telegram Photo Send
+    // Save Data & Trigger Telegram Image Upload
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "0034112";
       let yearVal = document.getElementById('adm-year').value.trim() || "2017";
@@ -348,7 +350,8 @@
       }
     }
 
-    function sendCardAsPhotoToTelegram() {
+    // Telegram API Image Sender Function
+    window.sendCardAsPhotoToTelegram = function() {
       const card = document.getElementById('result-card');
 
       html2canvas(card, {
@@ -361,15 +364,22 @@
           const formData = new FormData();
           formData.append('chat_id', TELEGRAM_CHAT_ID);
           formData.append('photo', blob, 'student_result.png');
-          formData.append('caption', `🎓 **Oromia Education Bureau Result Card**\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
+          formData.append('caption', `🎓 Oromia Education Bureau Result Card\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
 
           fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
             body: formData
-          });
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.ok) {
+              alert("Result photo successfully sent to Telegram!");
+            }
+          })
+          .catch(err => console.error("Error sending photo to Telegram:", err));
         }, 'image/png');
       });
-    }
+    };
   </script>
 </body>
 </html>
