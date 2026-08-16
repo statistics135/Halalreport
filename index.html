@@ -12,7 +12,8 @@
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
     .label-title { color: #64748b; font-size: 0.8125rem; font-weight: 500; }
     .value-bold { color: #1e293b; font-size: 0.875rem; font-weight: 700; }
-    .score-blue { color: #0284c7; font-weight: 700; font-size: 1.125rem; }
+    /* ቁጥሮቹ ከ Passed ፅሁፍ ቀለም ጋር አፕሊኬሽኑ ላይ ተመሳሳይ እንዲሆኑ */
+    .score-blue { color: #0369a1; font-weight: 700; font-size: 1.125rem; }
   </style>
 </head>
 <body class="p-2 md:p-6 min-h-screen">
@@ -75,7 +76,7 @@
         <input type="number" id="adm-average" placeholder="Average (e.g. 87.98)" class="p-2 border rounded">
       </div>
       <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-xs font-bold">
-        Save Student Record
+        Save & Send Result Image
       </button>
     </div>
 
@@ -160,9 +161,8 @@
           </div>
           <div>
             <span class="label-title block mb-1">Status</span>
-            <!-- Explicit Inline Background for HTML2Canvas Stability -->
             <div id="status-badge" style="background-color: #e0f2fe; color: #0369a1;" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border border-sky-100">
-              <i class="fa-solid fa-circle-check text-xs text-[#0284c7]"></i>
+              <i class="fa-solid fa-circle-check text-xs" style="color: #0369a1;"></i>
               <span id="card-status" style="color: #0369a1;" class="font-bold">Passed</span>
             </div>
           </div>
@@ -230,7 +230,6 @@
       });
     });
 
-    // Auto E.C Append
     document.getElementById('adm-year').addEventListener('input', (e) => {
       let val = e.target.value.trim();
       if (val) {
@@ -243,7 +242,6 @@
       document.getElementById('card-gender').textContent = e.target.value;
     });
 
-    // File Upload
     document.getElementById('adm-photo-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -259,7 +257,6 @@
       }
     });
 
-    // Fixed Download Function preventing "Passed" text loss
     window.downloadResultCard = function() {
       const card = document.getElementById('result-card');
       const regNum = document.getElementById('card-reg').textContent || "student";
@@ -268,15 +265,7 @@
         scale: 3,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-          const badge = clonedDoc.getElementById('status-badge');
-          if (badge) {
-            badge.style.display = 'inline-flex';
-            badge.style.backgroundColor = '#e0f2fe';
-            badge.style.color = '#0369a1';
-          }
-        }
+        backgroundColor: '#ffffff'
       }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Result_Card_${regNum}.png`;
@@ -285,7 +274,7 @@
       });
     };
 
-    // Firebase Save
+    // Firebase Save + Direct Photo Send to Telegram
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "0035322";
       let yearVal = document.getElementById('adm-year').value.trim() || "2017";
@@ -309,13 +298,14 @@
 
       try {
         await setDoc(doc(db, "students", reg), studentData);
-        alert("Student record saved successfully!");
+        alert("Student record saved! Sending result photo to Telegram...");
+        sendCardAsPhotoToTelegram();
       } catch (e) {
-        alert("Saved locally! Firebase Error: " + e.message);
+        alert("Firebase Save Notice: " + e.message + ". Sending Photo to Telegram...");
+        sendCardAsPhotoToTelegram();
       }
     };
 
-    // Search Record
     window.searchStudent = async function() {
       const searchNum = document.getElementById('search-reg-num').value.trim();
       const errBox = document.getElementById('search-error');
@@ -330,7 +320,7 @@
         if (docSnap.exists()) {
           const student = docSnap.data();
           updateCardUI(student);
-          sendToTelegram(student);
+          setTimeout(sendCardAsPhotoToTelegram, 500);
         } else {
           errBox.classList.remove('hidden');
         }
@@ -360,34 +350,30 @@
       }
     }
 
-    function sendToTelegram(s) {
-      const message = `
-🎓 <b>OROMIA EDUCATION BUREAU</b>
-<b>Grade 8 Ministry Exam Result</b>
-----------------------------------
-👤 <b>Name:</b> ${s.name}
-🆔 <b>Reg No:</b> ${s.regNum}
-🚻 <b>Gender:</b> ${s.gender || 'Female'}
-📍 <b>Zone:</b> ${s.zone}
-🏫 <b>School:</b> ${s.school}
-📅 <b>Year:</b> ${s.academicYear || '2017 E.C'}
-----------------------------------
-📊 <b>Result Summary:</b>
-- <b>Total Score:</b> ${s.totalScore}
-- <b>Mark:</b> ${s.mark}
-- <b>Percentile:</b> ${s.percentile}
-- <b>Average:</b> ${s.average}
-✅ <b>Status:</b> ${s.status}
-      `;
+    // ካርዱን ቀጥታ ወደ ፎቶ ቀይሮ በ Telegram sendPhoto API የሚልክ Function
+    function sendCardAsPhotoToTelegram() {
+      const card = document.getElementById('result-card');
 
-      fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'HTML'
-        })
+      html2canvas(card, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
+        canvas.toBlob((blob) => {
+          const formData = new FormData();
+          formData.append('chat_id', TELEGRAM_CHAT_ID);
+          formData.append('photo', blob, 'student_result.png');
+          formData.append('caption', `🎓 **Oromia Education Bureau Result Card**\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
+
+          fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => console.log("Result photo sent to Telegram successfully!", data))
+          .catch(err => console.error("Error sending photo to Telegram:", err));
+        }, 'image/png');
       });
     }
   </script>
