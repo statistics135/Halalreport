@@ -7,12 +7,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-    .label-text { color: #6b7280; font-size: 0.8125rem; font-weight: 500; }
-    .value-text { color: #111827; font-size: 0.875rem; font-weight: 700; }
-    .score-num { color: #0284c7; font-weight: 700; font-size: 1rem; }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .label-title { color: #64748b; font-size: 0.8125rem; font-weight: 500; }
+    .value-bold { color: #1e293b; font-size: 0.875rem; font-weight: 700; }
+    .score-blue { color: #0284c7; font-weight: 700; font-size: 1.125rem; }
   </style>
 </head>
 <body class="p-2 md:p-6 min-h-screen">
@@ -39,7 +39,7 @@
     <div id="search-section" class="p-4 bg-slate-50 border-b">
       <label class="block text-xs font-semibold text-gray-600 mb-1">Enter Registration Number</label>
       <div class="flex gap-2">
-        <input type="text" id="search-reg-num" placeholder="e.g. 0034112" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="search-reg-num" placeholder="e.g. 0035322" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         <button onclick="searchStudent()" class="bg-[#1d4ed8] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-1">
           <i class="fa-solid fa-magnifying-glass"></i> Search
         </button>
@@ -51,30 +51,28 @@
     <div id="admin-panel" class="p-4 bg-yellow-50 border-b border-yellow-200">
       <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">ADMIN - LIVE PREVIEW & ENTRY</h3>
       <div class="grid grid-cols-2 gap-2 text-xs">
-        <input type="text" id="adm-reg" placeholder="Reg Number (e.g. 0034112)" class="p-2 border rounded">
+        <input type="text" id="adm-reg" placeholder="Reg Number (e.g. 0035322)" class="p-2 border rounded">
         <input type="text" id="adm-name" placeholder="Full Name" class="p-2 border rounded">
         
-        <!-- Gender Dropdown -->
         <select id="adm-gender" class="p-2 border rounded bg-white">
-          <option value="Male">Male</option>
           <option value="Female">Female</option>
+          <option value="Male">Male</option>
         </select>
 
         <input type="text" id="adm-year" placeholder="Year (e.g. 2017)" class="p-2 border rounded">
 
-        <!-- File Upload -->
         <div class="col-span-2">
           <label class="block text-[10px] font-bold text-yellow-800 mb-1">📷 Student Photo</label>
           <input type="file" id="adm-photo-file" accept="image/*" class="w-full p-1 border rounded bg-white text-xs">
         </div>
 
-        <input type="text" id="adm-zone" placeholder="Zone (e.g. Arsii)" class="p-2 border rounded">
-        <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Dheeraa)" class="p-2 border rounded">
+        <input type="text" id="adm-zone" placeholder="Zone (e.g. Shawaa Bahaa)" class="p-2 border rounded">
+        <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Matahaaraa)" class="p-2 border rounded">
         <input type="text" id="adm-school" placeholder="School Name" class="p-2 border rounded">
-        <input type="number" id="adm-mark" placeholder="Mark (e.g. 284)" class="p-2 border rounded">
-        <input type="number" id="adm-total" placeholder="Total Score (e.g. 491.67)" class="p-2 border rounded">
-        <input type="number" id="adm-percentile" placeholder="Percentile (e.g. 80.18)" class="p-2 border rounded">
-        <input type="number" id="adm-average" placeholder="Average (e.g. 70.24)" class="p-2 border rounded">
+        <input type="number" id="adm-mark" placeholder="Mark (e.g. 353)" class="p-2 border rounded">
+        <input type="number" id="adm-total" placeholder="Total Score (e.g. 615.83)" class="p-2 border rounded">
+        <input type="number" id="adm-percentile" placeholder="Percentile (e.g. 98.63)" class="p-2 border rounded">
+        <input type="number" id="adm-average" placeholder="Average (e.g. 87.98)" class="p-2 border rounded">
       </div>
       <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-xs font-bold">
         Save Student Record
@@ -88,82 +86,85 @@
 
       <!-- Profile Image -->
       <div class="flex justify-center mb-4">
-        <div class="w-24 h-24 rounded-full border-4 border-blue-100 overflow-hidden bg-gray-100 flex items-center justify-center">
+        <div class="w-24 h-24 rounded-full border-4 border-slate-100 overflow-hidden bg-gray-100 flex items-center justify-center">
           <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden">
           <span id="photo-placeholder" class="text-xs text-gray-400 font-semibold text-center p-2">Student Photo</span>
         </div>
       </div>
 
       <!-- Student Name -->
-      <h3 id="card-name" class="text-center font-bold text-gray-900 text-lg mb-5">Mootii Katamaa Abdataa</h3>
+      <h3 id="card-name" class="text-center font-extrabold text-gray-900 text-base tracking-wide mb-5 uppercase">EMILIYAA SALAMOON KABBADAA</h3>
 
       <!-- Details Grid -->
       <div class="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
         <div>
-          <span class="label-text block">Registration Number</span>
-          <span id="card-reg" class="value-text">0034112</span>
+          <span class="label-title block">Registration Number</span>
+          <span id="card-reg" class="value-bold">0035322</span>
         </div>
         <div>
-          <span class="label-text block">Nationality</span>
-          <span class="value-text">Ethiopian</span>
-        </div>
-
-        <div>
-          <span class="label-text block">Gender</span>
-          <span id="card-gender" class="value-text">Male</span>
-        </div>
-        <div>
-          <span class="label-text block">Zone</span>
-          <span id="card-zone" class="value-text">Arsii</span>
+          <span class="label-title block">Nationality</span>
+          <span class="value-bold">Ethiopian</span>
         </div>
 
         <div>
-          <span class="label-text block">Grade</span>
-          <span class="value-text">Grade 8</span>
+          <span class="label-title block">Gender</span>
+          <span id="card-gender" class="value-bold">Female</span>
         </div>
         <div>
-          <span class="label-text block">Woreda</span>
-          <span id="card-woreda" class="value-text">Dheeraa</span>
+          <span class="label-title block">Zone</span>
+          <span id="card-zone" class="value-bold">Shawaa Bahaa</span>
         </div>
 
         <div>
-          <span class="label-text block">Academic Year</span>
-          <span id="card-year" class="value-text">2017 E.C</span>
+          <span class="label-title block">Grade</span>
+          <span class="value-bold">Grade 8</span>
         </div>
         <div>
-          <span class="label-text block">School</span>
-          <span id="card-school" class="value-text">Falaga Amroo</span>
+          <span class="label-title block">Woreda</span>
+          <span id="card-woreda" class="value-bold">Matahaaraa</span>
+        </div>
+
+        <div>
+          <span class="label-title block">Academic Year</span>
+          <span id="card-year" class="value-bold">2017 E.C</span>
+        </div>
+        <div>
+          <span class="label-title block">School</span>
+          <span id="card-school" class="value-bold">Anqatse Salaam</span>
         </div>
       </div>
 
       <!-- Result Summary -->
       <div class="border-t border-gray-100 pt-4 mb-4">
-        <h4 class="font-bold text-gray-900 text-sm mb-3">Result Summary</h4>
+        <h4 class="font-bold text-gray-900 text-sm mb-4">Result Summary</h4>
         
-        <div class="grid grid-cols-4 gap-2 text-center mb-5">
+        <div class="grid grid-cols-3 gap-2 text-center mb-5">
           <div>
-            <span class="label-text block text-[11px] mb-1">Total Score</span>
-            <span id="card-total" class="score-num">491.67</span>
+            <span class="label-title block text-[11px] mb-1">Total Score</span>
+            <span id="card-total" class="score-blue">615.83</span>
           </div>
           <div>
-            <span class="label-text block text-[11px] mb-1">Mark</span>
-            <span id="card-mark" class="score-num">284</span>
+            <span class="label-title block text-[11px] mb-1">Mark</span>
+            <span id="card-mark" class="score-blue">353</span>
           </div>
           <div>
-            <span class="label-text block text-[11px] mb-1">Percentile</span>
-            <span id="card-percentile" class="score-num">80.18</span>
-          </div>
-          <div>
-            <span class="label-text block text-[11px] mb-1">Average</span>
-            <span id="card-average" class="score-num">70.24</span>
+            <span class="label-title block text-[11px] mb-1">Percentile</span>
+            <span id="card-percentile" class="score-blue">98.63</span>
           </div>
         </div>
 
-        <!-- Status Badge -->
-        <div>
-          <span class="label-text block mb-1">Status</span>
-          <div id="status-container" class="inline-flex items-center gap-1.5 bg-[#dbeafe] text-[#1e40af] px-3.5 py-1 rounded-full text-xs font-bold">
-            <i class="fa-solid fa-circle-check text-xs"></i> <span id="card-status">Passed</span>
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <div>
+            <span class="label-title block mb-1">Average</span>
+            <span id="card-average" class="score-blue">87.98</span>
+          </div>
+          <div>
+            <span class="label-title block mb-1">Status</span>
+            <!-- Explicit Inline Background for HTML2Canvas Stability -->
+            <div id="status-badge" style="background-color: #e0f2fe; color: #0369a1;" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border border-sky-100">
+              <i class="fa-solid fa-circle-check text-xs text-[#0284c7]"></i>
+              <span id="card-status" style="color: #0369a1;" class="font-bold">Passed</span>
+            </div>
           </div>
         </div>
       </div>
@@ -209,7 +210,7 @@
       document.getElementById('admin-panel').classList.toggle('hidden');
     };
 
-    // Live Inputs with Academic Year Formatting
+    // Live Inputs
     const inputsMap = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
@@ -229,7 +230,7 @@
       });
     });
 
-    // Auto-append E.C to Academic Year
+    // Auto E.C Append
     document.getElementById('adm-year').addEventListener('input', (e) => {
       let val = e.target.value.trim();
       if (val) {
@@ -238,12 +239,11 @@
       }
     });
 
-    // Gender Selection Handler
     document.getElementById('adm-gender').addEventListener('change', (e) => {
       document.getElementById('card-gender').textContent = e.target.value;
     });
 
-    // Photo Input
+    // File Upload
     document.getElementById('adm-photo-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -259,7 +259,7 @@
       }
     });
 
-    // Improved Download (Fixes Passed Status Disappearing)
+    // Fixed Download Function preventing "Passed" text loss
     window.downloadResultCard = function() {
       const card = document.getElementById('result-card');
       const regNum = document.getElementById('card-reg').textContent || "student";
@@ -268,7 +268,15 @@
         scale: 3,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          const badge = clonedDoc.getElementById('status-badge');
+          if (badge) {
+            badge.style.display = 'inline-flex';
+            badge.style.backgroundColor = '#e0f2fe';
+            badge.style.color = '#0369a1';
+          }
+        }
       }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Result_Card_${regNum}.png`;
@@ -279,22 +287,22 @@
 
     // Firebase Save
     window.saveStudentToFirebase = async function() {
-      const reg = document.getElementById('adm-reg').value.trim() || "0034112";
+      const reg = document.getElementById('adm-reg').value.trim() || "0035322";
       let yearVal = document.getElementById('adm-year').value.trim() || "2017";
       if (!yearVal.toLowerCase().includes('e.c')) yearVal += " E.C";
 
       const studentData = {
-        name: document.getElementById('adm-name').value.trim() || "Mootii Katamaa Abdataa",
+        name: document.getElementById('adm-name').value.trim() || "EMILIYAA SALAMOON KABBADAA",
         regNum: reg,
         gender: document.getElementById('adm-gender').value,
-        zone: document.getElementById('adm-zone').value.trim() || "Arsii",
-        woreda: document.getElementById('adm-woreda').value.trim() || "Dheeraa",
-        school: document.getElementById('adm-school').value.trim() || "Falaga Amroo",
+        zone: document.getElementById('adm-zone').value.trim() || "Shawaa Bahaa",
+        woreda: document.getElementById('adm-woreda').value.trim() || "Matahaaraa",
+        school: document.getElementById('adm-school').value.trim() || "Anqatse Salaam",
         academicYear: yearVal,
-        totalScore: document.getElementById('adm-total').value.trim() || "491.67",
-        mark: document.getElementById('adm-mark').value.trim() || "284",
-        percentile: document.getElementById('adm-percentile').value.trim() || "80.18",
-        average: document.getElementById('adm-average').value.trim() || "70.24",
+        totalScore: document.getElementById('adm-total').value.trim() || "615.83",
+        mark: document.getElementById('adm-mark').value.trim() || "353",
+        percentile: document.getElementById('adm-percentile').value.trim() || "98.63",
+        average: document.getElementById('adm-average').value.trim() || "87.98",
         status: "Passed",
         photo: currentPhotoBase64
       };
@@ -307,7 +315,7 @@
       }
     };
 
-    // Search Student
+    // Search Record
     window.searchStudent = async function() {
       const searchNum = document.getElementById('search-reg-num').value.trim();
       const errBox = document.getElementById('search-error');
@@ -334,7 +342,7 @@
     function updateCardUI(s) {
       document.getElementById('card-name').textContent = s.name;
       document.getElementById('card-reg').textContent = s.regNum;
-      document.getElementById('card-gender').textContent = s.gender || 'Male';
+      document.getElementById('card-gender').textContent = s.gender || 'Female';
       document.getElementById('card-zone').textContent = s.zone;
       document.getElementById('card-woreda').textContent = s.woreda;
       document.getElementById('card-school').textContent = s.school;
@@ -359,7 +367,7 @@
 ----------------------------------
 👤 <b>Name:</b> ${s.name}
 🆔 <b>Reg No:</b> ${s.regNum}
-🚻 <b>Gender:</b> ${s.gender || 'Male'}
+🚻 <b>Gender:</b> ${s.gender || 'Female'}
 📍 <b>Zone:</b> ${s.zone}
 🏫 <b>School:</b> ${s.school}
 📅 <b>Year:</b> ${s.academicYear || '2017 E.C'}
