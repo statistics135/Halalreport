@@ -3,194 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oromia Education Bureau - QMT Exam Services</title>
+  <title>Oromia Education Bureau Primary Education Certificate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-    .label-title { color: #64748b; font-size: 0.8125rem; font-weight: 500; }
-    .value-bold { color: #1e293b; font-size: 0.875rem; font-weight: 700; }
-    .score-blue { color: #1a73e8 !important; font-weight: 700; font-size: 1.125rem; }
+    body { font-family: 'Times New Roman', Times, serif; background-color: #f3f4f6; }
+    .cert-container {
+      width: 794px;
+      height: 1123px; /* A4 Ratio */
+      background-color: #ffffff;
+      border: 12px double #2e7d32;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
   </style>
 </head>
-<body class="p-2 md:p-6 min-h-screen">
+<body class="p-4 flex flex-col items-center min-h-screen">
 
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
-    
-    <!-- 1. Search Section -->
-    <div id="search-section" class="p-4 bg-slate-50 border-b">
-      <label class="block text-xs font-semibold text-gray-600 mb-1">Enter Registration Number</label>
-      <div class="flex gap-2">
-        <input type="text" id="search-reg-num" placeholder="e.g. 0034112" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="searchStudent()" class="bg-[#1d4ed8] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-1">
-          <i class="fa-solid fa-magnifying-glass"></i> Search
-        </button>
-      </div>
-      <div id="search-error" class="text-red-500 text-xs mt-2 hidden">Student record not found!</div>
-    </div>
-
-    <!-- 2. Admin Panel (አሁን ከላይ ተደርጓል) -->
-    <div id="admin-panel" class="p-4 bg-yellow-50 border-b border-yellow-200">
-      <h3 class="text-xs font-bold text-yellow-800 uppercase mb-2">ADMIN - LIVE PREVIEW & ENTRY</h3>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <input type="text" id="adm-reg" placeholder="Reg Number (e.g. 0034112)" class="p-2 border rounded">
-        <input type="text" id="adm-name" placeholder="Full Name" class="p-2 border rounded">
-        
-        <select id="adm-gender" class="p-2 border rounded bg-white">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-
-        <input type="text" id="adm-year" placeholder="Year (e.g. 2017)" class="p-2 border rounded">
-
-        <div class="col-span-2">
-          <label class="block text-[10px] font-bold text-yellow-800 mb-1">📷 Student Photo</label>
-          <input type="file" id="adm-photo-file" accept="image/*" class="w-full p-1 border rounded bg-white text-xs">
-        </div>
-
-        <input type="text" id="adm-zone" placeholder="Zone (e.g. Arsii)" class="p-2 border rounded">
-        <input type="text" id="adm-woreda" placeholder="Woreda (e.g. Dheeraa)" class="p-2 border rounded">
-        <input type="text" id="adm-school" placeholder="School Name" class="p-2 border rounded">
-        <input type="number" id="adm-mark" placeholder="Mark (e.g. 284)" class="p-2 border rounded">
-        <input type="number" id="adm-total" placeholder="Total Score (e.g. 491.67)" class="p-2 border rounded">
-        <input type="number" id="adm-percentile" placeholder="Percentile (e.g. 80.18)" class="p-2 border rounded">
-        <input type="number" id="adm-average" placeholder="Average (e.g. 70.24)" class="p-2 border rounded">
-      </div>
-      <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-xs font-bold">
-        Save & Send Result Image
-      </button>
-    </div>
-
-    <!-- 3. Header (ከAdmin Panel በታች ተደርጓል) -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-100">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white text-xs font-bold border-2 border-yellow-500">
-          OEB
-        </div>
-        <div>
-          <h1 class="text-sm font-bold text-[#1e3a8a] leading-tight">Oromia Education Bureau</h1>
-          <p class="text-xs text-gray-500">QMT Exam Services</p>
-        </div>
-      </div>
-      <button onclick="toggleAdminPanel()" class="text-gray-600 hover:text-gray-900">
-        <i class="fa-solid fa-bars text-xl"></i>
-      </button>
-    </div>
-
-    <!-- Student Result Card -->
-    <div id="result-card" class="p-5 bg-white">
+  <!-- Admin Control Form -->
+  <div class="w-full max-w-4xl bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-6 shadow-sm">
+    <h3 class="text-sm font-bold text-yellow-800 uppercase mb-3"><i class="fa-solid fa-pen-to-square"></i> ADMIN - UPDATE CERTIFICATE DATA</h3>
+    <div class="grid grid-cols-3 gap-2 text-xs">
+      <input type="text" id="adm-reg" placeholder="Reg No. (e.g. 544738)" class="p-2 border rounded">
+      <input type="text" id="adm-name" placeholder="Student Full Name" class="p-2 border rounded">
+      <input type="text" id="adm-year" placeholder="Bara (e.g. 2012)" class="p-2 border rounded">
+      <input type="text" id="adm-zone" placeholder="Godina / City (e.g. Jimmaa)" class="p-2 border rounded">
+      <input type="text" id="adm-school" placeholder="Mana Barumsa (e.g. saxoo)" class="p-2 border rounded col-span-2">
       
-      <h2 class="text-center font-bold text-gray-800 text-sm mb-4 border-b pb-2">Student Profile</h2>
+      <div class="col-span-3 my-1 border-t pt-1 font-bold text-gray-700">Subject Scores:</div>
+      <input type="text" id="adm-eng" placeholder="Afaan Ingilizii (e.g. 83.33)" class="p-2 border rounded">
+      <input type="text" id="adm-[#000]" placeholder="Fiiziksii (AA) (e.g. 77.78)" class="p-2 border rounded">
+      <input type="text" id="adm-orom" placeholder="Afaan Oromoo 2ffaa (e.g. 86.67)" class="p-2 border rounded">
+      <input type="text" id="adm-chem" placeholder="Keemistirii (AA) (e.g. 83.33)" class="p-2 border rounded">
+      <input type="text" id="adm-amhar" placeholder="Afaan Amaaraa 1ffaa (e.g. 85.00)" class="p-2 border rounded">
+      <input type="text" id="adm-soc" placeholder="Hawaasa (AA) (e.g. 90.00)" class="p-2 border rounded">
+      <input type="text" id="adm-math" placeholder="Herrega (AA) (e.g. 70.00)" class="p-2 border rounded">
+      <input type="text" id="adm-blag" placeholder="BLAG (AA) (e.g. 93.33)" class="p-2 border rounded">
+      <input type="text" id="adm-bio" placeholder="Baayoloojii (AA) (e.g. 78.33)" class="p-2 border rounded">
+      
+      <div class="col-span-3 my-1 border-t pt-1 font-bold text-gray-700">Summary:</div>
+      <input type="text" id="adm-avg" placeholder="Qabxii Giddu-Galeessaa (e.g. 83.14%)" class="p-2 border rounded">
+      <input type="text" id="adm-percentile" placeholder="Parsantaayilii (e.g. 98.7)" class="p-2 border rounded">
+      <input type="text" id="adm-status" placeholder="Status (e.g. DARBE/ITE (PROMOTED))" class="p-2 border rounded col-span-2">
+      
+      <div class="col-span-3">
+        <label class="block font-bold text-gray-700 mb-1">📷 Upload Student Photo</label>
+        <input type="file" id="adm-photo" accept="image/*" class="w-full p-1 border rounded bg-white">
+      </div>
+    </div>
+    <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded text-xs font-bold flex justify-center items-center gap-2">
+      <i class="fa-solid fa-floppy-disk"></i> Save & Send Certificate Image to Telegram
+    </button>
+  </div>
 
-      <!-- Profile Image Container -->
-      <div class="flex justify-center mb-4">
-        <div class="w-24 h-24 rounded-full border-4 border-slate-100 overflow-hidden bg-white flex items-center justify-center shadow-sm">
-          <img id="card-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden" style="background-color: #ffffff;">
-          <span id="photo-placeholder" class="text-xs text-gray-400 font-semibold text-center p-2">Student Photo</span>
+  <!-- PRINTABLE OFFICIAL CERTIFICATE (100% Matching Structure) -->
+  <div id="result-card" class="cert-container p-8 flex flex-col justify-between text-black">
+    
+    <!-- Top Header: Logo, Title & Photo -->
+    <div>
+      <div class="flex justify-between items-start">
+        <div class="w-24 h-24">
+          <!-- Oromia Emblem -->
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <circle cx="50" cy="50" r="45" fill="#e65100" />
+            <circle cx="50" cy="50" r="35" fill="#f57c00" />
+            <path d="M 30 65 Q 50 20 70 65" stroke="#2e7d32" stroke-width="8" fill="none" />
+          </svg>
+        </div>
+        <div class="text-center flex-1 px-2">
+          <h1 class="text-xl font-bold tracking-tight">Biiroo Barnootaa Oromiyaatti Waraqaa Ragaa Xumura</h1>
+          <h2 class="text-lg font-bold mt-1">Barnoota Sadarkaa Tokkoffaa (Kutaa 8ffaa)</h2>
+          <h3 class="text-md italic text-gray-800">Oromia Education Bureau Primary Education (Grade 8) Completion Certificate</h3>
+        </div>
+        <div class="text-right">
+          <div class="w-24 h-28 border border-gray-400 bg-gray-50 mb-1 overflow-hidden">
+            <img id="card-photo" src="" class="w-full h-full object-cover hidden">
+            <div id="photo-placeholder" class="text-[10px] text-gray-400 text-center pt-8">Photo Here</div>
+          </div>
+          <span class="text-sm font-bold block">Reg No.: <span id="card-reg">544738</span></span>
         </div>
       </div>
 
-      <!-- Student Name -->
-      <h3 id="card-name" class="text-center font-extrabold text-gray-900 text-base tracking-wide mb-5">Mootii Katamaa Abdataa</h3>
-
-      <!-- Details Grid -->
-      <div class="grid grid-cols-2 gap-y-4 gap-x-6 mb-6">
-        <div>
-          <span class="label-title block">Registration Number</span>
-          <span id="card-reg" class="value-bold">0034112</span>
-        </div>
-        <div>
-          <span class="label-title block">Nationality</span>
-          <span class="value-bold">Ethiopian</span>
-        </div>
-
-        <div>
-          <span class="label-title block">Gender</span>
-          <span id="card-gender" class="value-bold">Male</span>
-        </div>
-        <div>
-          <span class="label-title block">Zone</span>
-          <span id="card-zone" class="value-bold">Arsii</span>
-        </div>
-
-        <div>
-          <span class="label-title block">Grade</span>
-          <span class="value-bold">Grade 8</span>
-        </div>
-        <div>
-          <span class="label-title block">Woreda</span>
-          <span id="card-woreda" class="value-bold">Dheeraa</span>
-        </div>
-
-        <div>
-          <span class="label-title block">Academic Year</span>
-          <span id="card-year" class="value-bold">2017 E.C</span>
-        </div>
-        <div>
-          <span class="label-title block">School</span>
-          <span id="card-school" class="value-bold">Falaga Amroo</span>
-        </div>
+      <!-- Student Credentials Line -->
+      <div class="mt-6 text-sm leading-relaxed">
+        <p>
+          <span class="font-bold">Barataa/tuu</span> 
+          <span id="card-name" class="font-bold underline px-2">Keru Mahammad Ibraahim murii 18</span> 
+          <span>Qorumsa Kutaa 8ffaa Bara</span> 
+          <span id="card-year" class="font-bold underline px-2">2012</span>
+        </p>
+        <p class="mt-2">
+          <span id="card-zone" class="font-bold">Godina/Bulchiinsa Magaalaa Jimmaa</span> 
+          <span id="card-school" class="font-bold underline px-2">Mana Barumsa saxoo</span> 
+          <span>Keessatti</span>
+        </p>
+        <p class="mt-2 font-bold">Fudhatee/tee Qabxii Kanaa Gadi galmeesseera</p>
       </div>
 
-      <!-- Result Summary -->
-      <div class="border-t border-gray-100 pt-4 mb-4">
-        <h4 class="font-bold text-gray-900 text-sm mb-4">Result Summary</h4>
-        
-        <div class="grid grid-cols-4 gap-1 text-center mb-5">
-          <div>
-            <span class="label-title block text-[11px] mb-1">Total Score</span>
-            <span id="card-total" class="score-blue">491.67</span>
-          </div>
-          <div>
-            <span class="label-title block text-[11px] mb-1">Mark</span>
-            <span id="card-mark" class="score-blue">284</span>
-          </div>
-          <div>
-            <span class="label-title block text-[11px] mb-1">Percentile</span>
-            <span id="card-percentile" class="score-blue">80.18</span>
-          </div>
-          <div>
-            <span class="label-title block text-[11px] mb-1">Average</span>
-            <span id="card-average" class="score-blue">70.24</span>
-          </div>
-        </div>
+      <!-- Subject Wise Score Table (Exact Layout) -->
+      <div class="mt-6 grid grid-cols-2 gap-x-12 gap-y-2 text-sm font-semibold border-t border-b border-gray-300 py-4">
+        <div class="flex justify-between"><span>Afaan Ingilizii</span><span id="card-eng">83.33</span></div>
+        <div class="flex justify-between"><span>Fiiziksii (AA)</span><span id="card-phy">77.78</span></div>
 
-        <div>
-          <span class="label-title block mb-1">Status</span>
-          <div id="status-badge" style="background-color: #e8f0fe !important; border: 1px solid #d2e3fc !important; display: inline-flex !important; align-items: center !important; padding: 5px 12px !important; border-radius: 9999px !important;">
-            <svg style="width: 14px; height: 14px; fill: #1a73e8; margin-right: 5px;" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span id="card-status" style="color: #1a73e8 !important; font-weight: 700 !important; font-size: 13px !important;">Passed</span>
-          </div>
-        </div>
+        <div class="flex justify-between"><span>Afaan Oromoo 2ffaa</span><span id="card-orom">86.67</span></div>
+        <div class="flex justify-between"><span>Keemistirii (AA)</span><span id="card-chem">83.33</span></div>
+
+        <div class="flex justify-between"><span>Afaan Amaaraa 1ffaa</span><span id="card-amhar">85.00</span></div>
+        <div class="flex justify-between"><span>Hawaasa (AA)</span><span id="card-soc">90.00</span></div>
+
+        <div class="flex justify-between"><span>Herrega (AA)</span><span id="card-math">70.00</span></div>
+        <div class="flex justify-between"><span>BLAG (AA)</span><span id="card-blag">93.33</span></div>
+
+        <div class="flex justify-between"><span>Baayoloojii (AA)</span><span id="card-bio">78.33</span></div>
+        <div></div>
       </div>
 
-      <div class="border-t border-gray-100 pt-3">
-        <h4 class="font-bold text-gray-900 text-sm mb-1">Subject Wise Results</h4>
-        <p class="text-xs text-gray-400 italic">Individual subject scores available upon official verification.</p>
+      <!-- Summary Results -->
+      <div class="mt-6 text-sm space-y-3">
+        <div class="flex gap-8 items-center">
+          <span class="font-bold w-48">Qabxii Giddu-Galeessaa</span>
+          <span id="card-avg" class="font-bold text-base">83.14%</span>
+        </div>
+        <div class="flex gap-8 items-center">
+          <span class="font-bold w-48">Parsantaayilii</span>
+          <span id="card-percentile" class="font-bold text-base">98.7</span>
+        </div>
+        <div class="flex gap-8 items-center pt-2">
+          <span class="font-bold w-48">Gara kutaa 9ffaatti</span>
+          <span id="card-status" class="font-bold text-base uppercase">DARBE/ITE (PROMOTED)</span>
+        </div>
       </div>
-
     </div>
 
-    <!-- Download Section -->
-    <div class="p-4 border-t bg-gray-50 flex justify-center">
-      <button onclick="downloadResultCard()" class="bg-[#16a34a] hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
-        <i class="fa-solid fa-file-arrow-down text-sm"></i> Download Result Card
-      </button>
+    <!-- Official Stamp & Signatures Section -->
+    <div class="mt-8 border-t border-gray-200 pt-4">
+      <div class="flex justify-between items-end relative">
+        
+        <!-- Bureau Head Signature -->
+        <div class="text-center w-52">
+          <div class="h-12 border-b border-black mb-1 flex items-end justify-center italic text-xs">Dr. Tolaa Bariisoo</div>
+          <p class="font-bold text-xs">Hogganaa Biiroo Barnootaa</p>
+          <p class="text-[10px]">Oromia Education Bureau Head</p>
+        </div>
+
+        <!-- Center Stamp Design -->
+        <div class="w-28 h-28 border-2 border-dashed border-red-600 rounded-full flex flex-col items-center justify-center p-1 text-center text-red-600 text-[9px] font-bold">
+          <div class="border border-red-600 rounded-full p-2 w-full h-full flex flex-col items-center justify-center">
+            <span>Oromiyaatti</span>
+            <span>Biiroo Barnootaa</span>
+            <span>★ OFFICIAL ★</span>
+          </div>
+        </div>
+
+        <!-- Examination Director Signature -->
+        <div class="text-center w-60">
+          <div class="h-12 border-b border-black mb-1 flex items-end justify-center italic text-xs">Laggasaa Dirribaa Baatuu</div>
+          <p class="font-bold text-xs">Daayirekteera Daayirektoreetii Iyyaafannoo</p>
+          <p class="text-[10px]">Assessment and Examination Directorate Director</p>
+        </div>
+      </div>
+
+      <!-- Footer Disclaimer -->
+      <div class="mt-6 flex justify-between items-center text-[10px] text-gray-700 border-t border-gray-300 pt-2">
+        <p class="w-1/2"><span class="font-bold">Habachiisa:</span> Waraqaan ragaa kun yoo haqame yookiin yoo suuraan irraa ka'e faayidaa hinqabu.</p>
+        <p class="w-1/2 text-right"><span class="font-bold">Note:</span> Erasure, alteration or absence of the photograph Invalidates this certificate.</p>
+      </div>
     </div>
 
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
     const TELEGRAM_CHAT_ID = '6853753240';
-    
+
     const firebaseConfig = {
       apiKey: "AIzaSyAZ7MU2B58bWcu-8jH9Pvv5Ob9XGQyx4NU",
       authDomain: "halal-report-2.firebaseapp.com",
@@ -205,199 +195,87 @@
 
     let currentPhotoBase64 = "";
 
-    window.toggleAdminPanel = function() {
-      document.getElementById('admin-panel').classList.toggle('hidden');
-    };
-
-    // Live Inputs
-    const inputsMap = [
+    // Live Inputs Linker
+    const bindings = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
+      { input: 'adm-year', target: 'card-year' },
       { input: 'adm-zone', target: 'card-zone' },
-      { input: 'adm-woreda', target: 'card-woreda' },
       { input: 'adm-school', target: 'card-school' },
-      { input: 'adm-mark', target: 'card-mark' },
-      { input: 'adm-total', target: 'card-total' },
+      { input: 'adm-eng', target: 'card-eng' },
+      { input: 'adm-phy', target: 'card-phy' },
+      { input: 'adm-orom', target: 'card-orom' },
+      { input: 'adm-chem', target: 'card-chem' },
+      { input: 'adm-amhar', target: 'card-amhar' },
+      { input: 'adm-soc', target: 'card-soc' },
+      { input: 'adm-math', target: 'card-math' },
+      { input: 'adm-blag', target: 'card-blag' },
+      { input: 'adm-bio', target: 'card-bio' },
+      { input: 'adm-avg', target: 'card-avg' },
       { input: 'adm-percentile', target: 'card-percentile' },
-      { input: 'adm-average', target: 'card-average' }
+      { input: 'adm-status', target: 'card-status' }
     ];
 
-    inputsMap.forEach(item => {
-      document.getElementById(item.input).addEventListener('input', (e) => {
-        const val = e.target.value.trim();
-        if (val) document.getElementById(item.target).textContent = val;
+    bindings.forEach(b => {
+      document.getElementById(b.input)?.addEventListener('input', (e) => {
+        if(e.target.value.trim()) document.getElementById(b.target).textContent = e.target.value.trim();
       });
     });
 
-    document.getElementById('adm-year').addEventListener('input', (e) => {
-      let val = e.target.value.trim();
-      if (val) {
-        if (!val.toLowerCase().includes('e.c')) val += ' E.C';
-        document.getElementById('card-year').textContent = val;
-      }
-    });
-
-    document.getElementById('adm-gender').addEventListener('change', (e) => {
-      document.getElementById('card-gender').textContent = e.target.value;
-    });
-
-    // File Upload Handler with Canvas Processing
-    document.getElementById('adm-photo-file').addEventListener('change', function(e) {
+    // Handle Photo Upload
+    document.getElementById('adm-photo').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img, 0, 0);
-
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imgData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-              const r = data[i];
-              const g = data[i + 1];
-              const b = data[i + 2];
-
-              if ((b > r + 15 && b > g + 15) || (r > 180 && g > 180 && b > 180)) {
-                data[i] = 255;
-                data[i + 1] = 255;
-                data[i + 2] = 255;
-              }
-            }
-
-            ctx.putImageData(imgData, 0, 0);
-
-            currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.95);
-            const imgEl = document.getElementById('card-photo');
-            imgEl.src = currentPhotoBase64;
-            imgEl.classList.remove('hidden');
-            document.getElementById('photo-placeholder').classList.add('hidden');
-          };
-          img.src = event.target.result;
+        reader.onload = function(evt) {
+          currentPhotoBase64 = evt.target.result;
+          const img = document.getElementById('card-photo');
+          img.src = currentPhotoBase64;
+          img.classList.remove('hidden');
+          document.getElementById('photo-placeholder').classList.add('hidden');
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // Download Function
-    window.downloadResultCard = function() {
-      const card = document.getElementById('result-card');
-      const regNum = document.getElementById('card-reg').textContent || "student";
-      
-      html2canvas(card, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `Result_Card_${regNum}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      });
-    };
-
-    // Firebase Save & Telegram Photo Send
+    // Save & Send Image to Telegram
     window.saveStudentToFirebase = async function() {
-      const reg = document.getElementById('adm-reg').value.trim() || "0034112";
-      let yearVal = document.getElementById('adm-year').value.trim() || "2017";
-      if (!yearVal.toLowerCase().includes('e.c')) yearVal += " E.C";
-
+      const reg = document.getElementById('adm-reg').value.trim() || "544738";
+      
       const studentData = {
-        name: document.getElementById('adm-name').value.trim() || "Mootii Katamaa Abdataa",
         regNum: reg,
-        gender: document.getElementById('adm-gender').value,
-        zone: document.getElementById('adm-zone').value.trim() || "Arsii",
-        woreda: document.getElementById('adm-woreda').value.trim() || "Dheeraa",
-        school: document.getElementById('adm-school').value.trim() || "Falaga Amroo",
-        academicYear: yearVal,
-        totalScore: document.getElementById('adm-total').value.trim() || "491.67",
-        mark: document.getElementById('adm-mark').value.trim() || "284",
-        percentile: document.getElementById('adm-percentile').value.trim() || "80.18",
-        average: document.getElementById('adm-average').value.trim() || "70.24",
-        status: "Passed",
+        name: document.getElementById('card-name').textContent,
+        year: document.getElementById('card-year').textContent,
         photo: currentPhotoBase64
       };
 
       try {
-        await setDoc(doc(db, "students", reg), studentData);
-        alert("Student record saved! Sending result image to Telegram...");
-        sendCardAsPhotoToTelegram();
-      } catch (e) {
-        sendCardAsPhotoToTelegram();
+        await setDoc(doc(db, "certificates", reg), studentData);
+        alert("Record Saved! Generating & Sending Certificate Image...");
+        sendCertificateToTelegram();
+      } catch(e) {
+        sendCertificateToTelegram();
       }
     };
 
-    window.searchStudent = async function() {
-      const searchNum = document.getElementById('search-reg-num').value.trim();
-      const errBox = document.getElementById('search-error');
-      errBox.classList.add('hidden');
+    function sendCertificateToTelegram() {
+      const cert = document.getElementById('result-card');
 
-      if (!searchNum) return;
-
-      try {
-        const docRef = doc(db, "students", searchNum);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const student = docSnap.data();
-          updateCardUI(student);
-          setTimeout(sendCardAsPhotoToTelegram, 500);
-        } else {
-          errBox.classList.remove('hidden');
-        }
-      } catch (e) {
-        errBox.classList.remove('hidden');
-      }
-    };
-
-    function updateCardUI(s) {
-      document.getElementById('card-name').textContent = s.name;
-      document.getElementById('card-reg').textContent = s.regNum;
-      document.getElementById('card-gender').textContent = s.gender || 'Male';
-      document.getElementById('card-zone').textContent = s.zone;
-      document.getElementById('card-woreda').textContent = s.woreda;
-      document.getElementById('card-school').textContent = s.school;
-      if (s.academicYear) document.getElementById('card-year').textContent = s.academicYear;
-      document.getElementById('card-total').textContent = s.totalScore;
-      document.getElementById('card-mark').textContent = s.mark;
-      document.getElementById('card-percentile').textContent = s.percentile;
-      document.getElementById('card-average').textContent = s.average;
-      
-      if (s.photo) {
-        const imgEl = document.getElementById('card-photo');
-        imgEl.src = s.photo;
-        imgEl.classList.remove('hidden');
-        document.getElementById('photo-placeholder').classList.add('hidden');
-      }
-    }
-
-    // Direct Image Sender to Telegram
-    function sendCardAsPhotoToTelegram() {
-      const card = document.getElementById('result-card');
-
-      html2canvas(card, {
+      html2canvas(cert, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
         backgroundColor: '#ffffff'
       }).then(canvas => {
         canvas.toBlob((blob) => {
           const formData = new FormData();
           formData.append('chat_id', TELEGRAM_CHAT_ID);
-          formData.append('photo', blob, 'student_result.png');
-          formData.append('caption', `🎓 Oromia Education Bureau Result Card\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
+          formData.append('photo', blob, 'Certificate.png');
+          formData.append('caption', `📜 Official Grade 8 Certificate\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
 
           fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
             body: formData
-          });
+          }).then(() => alert("Certificate Photo sent to Telegram successfully!"));
         }, 'image/png');
       });
     }
