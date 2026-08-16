@@ -9,22 +9,58 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Times New Roman', Times, serif; background-color: #f3f4f6; }
+    body { font-family: 'Times New Roman', Times, serif; background-color: #e5e7eb; }
+    
+    /* Authentic Certificate Background Pattern & Color */
     .cert-container {
       width: 794px;
-      height: 1123px; /* A4 Ratio */
-      background-color: #ffffff;
-      border: 12px double #2e7d32;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      height: 1123px; /* A4 Standard Ratio */
+      background-color: #edf5ea;
+      background-image: radial-gradient(#2e7d32 0.5px, transparent 0.5px), radial-gradient(#2e7d32 0.5px, #edf5ea 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      border: 14px solid #2e7d32;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       position: relative;
+    }
+
+    .cert-inner-border {
+      border: 2px solid #1b5e20;
+      height: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    /* Stamp Styling */
+    .official-stamp {
+      width: 125px;
+      height: 125px;
+      border: 3px double #b71c1c;
+      border-radius: 50%;
+      color: #b71c1c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 8px;
+      line-height: 1.1;
+      transform: rotate(-10deg);
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 0 0 2px #b71c1c;
     }
   </style>
 </head>
 <body class="p-4 flex flex-col items-center min-h-screen">
 
   <!-- Admin Control Form -->
-  <div class="w-full max-w-4xl bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-6 shadow-sm">
-    <h3 class="text-sm font-bold text-yellow-800 uppercase mb-3"><i class="fa-solid fa-pen-to-square"></i> ADMIN - UPDATE CERTIFICATE DATA</h3>
+  <div class="w-full max-w-4xl bg-white border border-gray-300 p-4 rounded-xl mb-6 shadow-md">
+    <h3 class="text-sm font-bold text-emerald-800 uppercase mb-3"><i class="fa-solid fa-pen-to-square"></i> ADMIN - UPDATE CERTIFICATE DATA</h3>
     <div class="grid grid-cols-3 gap-2 text-xs">
       <input type="text" id="adm-reg" placeholder="Reg No. (e.g. 544738)" class="p-2 border rounded">
       <input type="text" id="adm-name" placeholder="Student Full Name" class="p-2 border rounded">
@@ -34,7 +70,7 @@
       
       <div class="col-span-3 my-1 border-t pt-1 font-bold text-gray-700">Subject Scores:</div>
       <input type="text" id="adm-eng" placeholder="Afaan Ingilizii (e.g. 83.33)" class="p-2 border rounded">
-      <input type="text" id="adm-[#000]" placeholder="Fiiziksii (AA) (e.g. 77.78)" class="p-2 border rounded">
+      <input type="text" id="adm-phy" placeholder="Fiiziksii (AA) (e.g. 77.78)" class="p-2 border rounded">
       <input type="text" id="adm-orom" placeholder="Afaan Oromoo 2ffaa (e.g. 86.67)" class="p-2 border rounded">
       <input type="text" id="adm-chem" placeholder="Keemistirii (AA) (e.g. 83.33)" class="p-2 border rounded">
       <input type="text" id="adm-amhar" placeholder="Afaan Amaaraa 1ffaa (e.g. 85.00)" class="p-2 border rounded">
@@ -53,125 +89,127 @@
         <input type="file" id="adm-photo" accept="image/*" class="w-full p-1 border rounded bg-white">
       </div>
     </div>
-    <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded text-xs font-bold flex justify-center items-center gap-2">
+    <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded text-xs font-bold flex justify-center items-center gap-2 shadow">
       <i class="fa-solid fa-floppy-disk"></i> Save & Send Certificate Image to Telegram
     </button>
   </div>
 
-  <!-- PRINTABLE OFFICIAL CERTIFICATE (100% Matching Structure) -->
-  <div id="result-card" class="cert-container p-8 flex flex-col justify-between text-black">
-    
-    <!-- Top Header: Logo, Title & Photo -->
-    <div>
-      <div class="flex justify-between items-start">
-        <div class="w-24 h-24">
-          <!-- Oromia Emblem -->
-          <svg viewBox="0 0 100 100" class="w-full h-full">
-            <circle cx="50" cy="50" r="45" fill="#e65100" />
-            <circle cx="50" cy="50" r="35" fill="#f57c00" />
-            <path d="M 30 65 Q 50 20 70 65" stroke="#2e7d32" stroke-width="8" fill="none" />
-          </svg>
-        </div>
-        <div class="text-center flex-1 px-2">
-          <h1 class="text-xl font-bold tracking-tight">Biiroo Barnootaa Oromiyaatti Waraqaa Ragaa Xumura</h1>
-          <h2 class="text-lg font-bold mt-1">Barnoota Sadarkaa Tokkoffaa (Kutaa 8ffaa)</h2>
-          <h3 class="text-md italic text-gray-800">Oromia Education Bureau Primary Education (Grade 8) Completion Certificate</h3>
-        </div>
-        <div class="text-right">
-          <div class="w-24 h-28 border border-gray-400 bg-gray-50 mb-1 overflow-hidden">
-            <img id="card-photo" src="" class="w-full h-full object-cover hidden">
-            <div id="photo-placeholder" class="text-[10px] text-gray-400 text-center pt-8">Photo Here</div>
+  <!-- PRINTABLE OFFICIAL CERTIFICATE -->
+  <div id="result-card" class="cert-container p-3 text-black">
+    <div class="cert-inner-border">
+      
+      <!-- Top Header: Emblem, Title & Photo -->
+      <div>
+        <div class="flex justify-between items-start">
+          <div class="w-28 h-28">
+            <!-- Official Emblem Logo -->
+            <svg viewBox="0 0 100 100" class="w-full h-full">
+              <circle cx="50" cy="50" r="46" fill="#e65100" />
+              <circle cx="50" cy="50" r="36" fill="#f57c00" />
+              <path d="M 30 68 Q 50 18 70 68" stroke="#2e7d32" stroke-width="10" fill="none" />
+              <circle cx="50" cy="35" r="8" fill="#f57c00" />
+            </svg>
           </div>
-          <span class="text-sm font-bold block">Reg No.: <span id="card-reg">544738</span></span>
-        </div>
-      </div>
-
-      <!-- Student Credentials Line -->
-      <div class="mt-6 text-sm leading-relaxed">
-        <p>
-          <span class="font-bold">Barataa/tuu</span> 
-          <span id="card-name" class="font-bold underline px-2">Keru Mahammad Ibraahim murii 18</span> 
-          <span>Qorumsa Kutaa 8ffaa Bara</span> 
-          <span id="card-year" class="font-bold underline px-2">2012</span>
-        </p>
-        <p class="mt-2">
-          <span id="card-zone" class="font-bold">Godina/Bulchiinsa Magaalaa Jimmaa</span> 
-          <span id="card-school" class="font-bold underline px-2">Mana Barumsa saxoo</span> 
-          <span>Keessatti</span>
-        </p>
-        <p class="mt-2 font-bold">Fudhatee/tee Qabxii Kanaa Gadi galmeesseera</p>
-      </div>
-
-      <!-- Subject Wise Score Table (Exact Layout) -->
-      <div class="mt-6 grid grid-cols-2 gap-x-12 gap-y-2 text-sm font-semibold border-t border-b border-gray-300 py-4">
-        <div class="flex justify-between"><span>Afaan Ingilizii</span><span id="card-eng">83.33</span></div>
-        <div class="flex justify-between"><span>Fiiziksii (AA)</span><span id="card-phy">77.78</span></div>
-
-        <div class="flex justify-between"><span>Afaan Oromoo 2ffaa</span><span id="card-orom">86.67</span></div>
-        <div class="flex justify-between"><span>Keemistirii (AA)</span><span id="card-chem">83.33</span></div>
-
-        <div class="flex justify-between"><span>Afaan Amaaraa 1ffaa</span><span id="card-amhar">85.00</span></div>
-        <div class="flex justify-between"><span>Hawaasa (AA)</span><span id="card-soc">90.00</span></div>
-
-        <div class="flex justify-between"><span>Herrega (AA)</span><span id="card-math">70.00</span></div>
-        <div class="flex justify-between"><span>BLAG (AA)</span><span id="card-blag">93.33</span></div>
-
-        <div class="flex justify-between"><span>Baayoloojii (AA)</span><span id="card-bio">78.33</span></div>
-        <div></div>
-      </div>
-
-      <!-- Summary Results -->
-      <div class="mt-6 text-sm space-y-3">
-        <div class="flex gap-8 items-center">
-          <span class="font-bold w-48">Qabxii Giddu-Galeessaa</span>
-          <span id="card-avg" class="font-bold text-base">83.14%</span>
-        </div>
-        <div class="flex gap-8 items-center">
-          <span class="font-bold w-48">Parsantaayilii</span>
-          <span id="card-percentile" class="font-bold text-base">98.7</span>
-        </div>
-        <div class="flex gap-8 items-center pt-2">
-          <span class="font-bold w-48">Gara kutaa 9ffaatti</span>
-          <span id="card-status" class="font-bold text-base uppercase">DARBE/ITE (PROMOTED)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Official Stamp & Signatures Section -->
-    <div class="mt-8 border-t border-gray-200 pt-4">
-      <div class="flex justify-between items-end relative">
-        
-        <!-- Bureau Head Signature -->
-        <div class="text-center w-52">
-          <div class="h-12 border-b border-black mb-1 flex items-end justify-center italic text-xs">Dr. Tolaa Bariisoo</div>
-          <p class="font-bold text-xs">Hogganaa Biiroo Barnootaa</p>
-          <p class="text-[10px]">Oromia Education Bureau Head</p>
-        </div>
-
-        <!-- Center Stamp Design -->
-        <div class="w-28 h-28 border-2 border-dashed border-red-600 rounded-full flex flex-col items-center justify-center p-1 text-center text-red-600 text-[9px] font-bold">
-          <div class="border border-red-600 rounded-full p-2 w-full h-full flex flex-col items-center justify-center">
-            <span>Oromiyaatti</span>
-            <span>Biiroo Barnootaa</span>
-            <span>★ OFFICIAL ★</span>
+          <div class="text-center flex-1 px-2 pt-2">
+            <h1 class="text-xl font-bold tracking-tight text-gray-900">Biiroo Barnootaa Oromiyaatti Waraqaa Ragaa Xumura</h1>
+            <h2 class="text-lg font-bold mt-1 text-gray-900">Barnoota Sadarkaa Tokkoffaa (Kutaa 8ffaa)</h2>
+            <h3 class="text-xs italic text-gray-800 mt-0.5">Oromia Education Bureau Primary Education (Grade 8) Completion Certificate</h3>
+          </div>
+          <div class="text-right">
+            <div class="w-24 h-28 border-2 border-gray-400 bg-white mb-1 overflow-hidden shadow-sm">
+              <img id="card-photo" src="" class="w-full h-full object-cover hidden">
+              <div id="photo-placeholder" class="text-[10px] text-gray-400 text-center pt-8">Photo Here</div>
+            </div>
+            <span class="text-xs font-bold block text-gray-900">Reg No.: <span id="card-reg">544738</span></span>
           </div>
         </div>
 
-        <!-- Examination Director Signature -->
-        <div class="text-center w-60">
-          <div class="h-12 border-b border-black mb-1 flex items-end justify-center italic text-xs">Laggasaa Dirribaa Baatuu</div>
-          <p class="font-bold text-xs">Daayirekteera Daayirektoreetii Iyyaafannoo</p>
-          <p class="text-[10px]">Assessment and Examination Directorate Director</p>
+        <!-- Student Credentials Line -->
+        <div class="mt-8 text-sm leading-relaxed text-gray-900">
+          <p>
+            <span class="font-bold">Barataa/tuu</span> 
+            <span id="card-name" class="font-bold underline px-2">Keru Mahammad Ibraahim murii 18</span> 
+            <span>Qorumsa Kutaa 8ffaa Bara</span> 
+            <span id="card-year" class="font-bold underline px-2">2012</span>
+          </p>
+          <p class="mt-2">
+            <span id="card-zone" class="font-bold">Godina/Bulchiinsa Magaalaa Jimmaa</span> 
+            <span id="card-school" class="font-bold underline px-2">Mana Barumsa saxoo</span> 
+            <span>Keessatti</span>
+          </p>
+          <p class="mt-2 font-bold">Fudhatee/tee Qabxii Kanaa Gadi galmeesseera</p>
+        </div>
+
+        <!-- Subject Wise Score Table -->
+        <div class="mt-8 grid grid-cols-2 gap-x-16 gap-y-2 text-sm font-semibold border-t-2 border-b-2 border-gray-400 py-4 text-gray-900">
+          <div class="flex justify-between"><span>Afaan Ingilizii</span><span id="card-eng">83.33</span></div>
+          <div class="flex justify-between"><span>Fiiziksii (AA)</span><span id="card-phy">77.78</span></div>
+
+          <div class="flex justify-between"><span>Afaan Oromoo 2ffaa</span><span id="card-orom">86.67</span></div>
+          <div class="flex justify-between"><span>Keemistirii (AA)</span><span id="card-chem">83.33</span></div>
+
+          <div class="flex justify-between"><span>Afaan Amaaraa 1ffaa</span><span id="card-amhar">85.00</span></div>
+          <div class="flex justify-between"><span>Hawaasa (AA)</span><span id="card-soc">90.00</span></div>
+
+          <div class="flex justify-between"><span>Herrega (AA)</span><span id="card-math">70.00</span></div>
+          <div class="flex justify-between"><span>BLAG (AA)</span><span id="card-blag">93.33</span></div>
+
+          <div class="flex justify-between"><span>Baayoloojii (AA)</span><span id="card-bio">78.33</span></div>
+          <div></div>
+        </div>
+
+        <!-- Summary Results -->
+        <div class="mt-8 text-sm space-y-3 text-gray-900">
+          <div class="flex gap-8 items-center">
+            <span class="font-bold w-48">Qabxii Giddu-Galeessaa</span>
+            <span id="card-avg" class="font-bold text-base">83.14%</span>
+          </div>
+          <div class="flex gap-8 items-center">
+            <span class="font-bold w-48">Parsantaayilii</span>
+            <span id="card-percentile" class="font-bold text-base">98.7</span>
+          </div>
+          <div class="flex gap-8 items-center pt-2">
+            <span class="font-bold w-48">Gara kutaa 9ffaatti</span>
+            <span id="card-status" class="font-bold text-base uppercase">DARBE/ITE (PROMOTED)</span>
+          </div>
         </div>
       </div>
 
-      <!-- Footer Disclaimer -->
-      <div class="mt-6 flex justify-between items-center text-[10px] text-gray-700 border-t border-gray-300 pt-2">
-        <p class="w-1/2"><span class="font-bold">Habachiisa:</span> Waraqaan ragaa kun yoo haqame yookiin yoo suuraan irraa ka'e faayidaa hinqabu.</p>
-        <p class="w-1/2 text-right"><span class="font-bold">Note:</span> Erasure, alteration or absence of the photograph Invalidates this certificate.</p>
-      </div>
-    </div>
+      <!-- Official Stamp & Signatures Section -->
+      <div class="mt-8 border-t border-gray-400 pt-4">
+        <div class="flex justify-between items-end relative">
+          
+          <!-- Bureau Head Signature -->
+          <div class="text-center w-52">
+            <div class="h-10 border-b border-black mb-1 flex items-end justify-center italic text-xs font-bold">Dr. Tolaa Bariisoo</div>
+            <p class="font-bold text-xs">Hogganaa Biiroo Barnootaa</p>
+            <p class="text-[10px]">Oromia Education Bureau Head</p>
+          </div>
 
+          <!-- Original Official Red Stamp -->
+          <div class="official-stamp">
+            <div>Nannoo Oromiyaatti</div>
+            <div class="my-0.5">Biiroo Barnootaa</div>
+            <div>★ B.S.S.P.E ★</div>
+            <div class="mt-0.5 text-[7px]">OFFICIAL STAMP</div>
+          </div>
+
+          <!-- Examination Director Signature -->
+          <div class="text-center w-60">
+            <div class="h-10 border-b border-black mb-1 flex items-end justify-center italic text-xs font-bold">Laggasaa Dirribaa Baatuu</div>
+            <p class="font-bold text-xs">Daayirekteera Daayirektoreetii Iyyaafannoo</p>
+            <p class="text-[10px]">Assessment and Examination Directorate Director</p>
+          </div>
+        </div>
+
+        <!-- Footer Disclaimer -->
+        <div class="mt-6 flex justify-between items-center text-[10px] text-gray-800 border-t border-gray-300 pt-2">
+          <p class="w-1/2"><span class="font-bold">Habachiisa:</span> Waraqaan ragaa kun yoo haqame yookiin yoo suuraan irraa ka'e faayidaa hinqabu.</p>
+          <p class="w-1/2 text-right"><span class="font-bold">Note:</span> Erasure, alteration or absence of the photograph Invalidates this certificate.</p>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <script type="module">
@@ -195,7 +233,7 @@
 
     let currentPhotoBase64 = "";
 
-    // Live Inputs Linker
+    // Dynamic Binding Controls
     const bindings = [
       { input: 'adm-reg', target: 'card-reg' },
       { input: 'adm-name', target: 'card-name' },
@@ -222,7 +260,7 @@
       });
     });
 
-    // Handle Photo Upload
+    // Upload Student Photo Handler
     document.getElementById('adm-photo').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -238,7 +276,7 @@
       }
     });
 
-    // Save & Send Image to Telegram
+    // Firebase Save and Telegram Sender
     window.saveStudentToFirebase = async function() {
       const reg = document.getElementById('adm-reg').value.trim() || "544738";
       
@@ -251,7 +289,7 @@
 
       try {
         await setDoc(doc(db, "certificates", reg), studentData);
-        alert("Record Saved! Generating & Sending Certificate Image...");
+        alert("Certificate Record Saved! Processing image...");
         sendCertificateToTelegram();
       } catch(e) {
         sendCertificateToTelegram();
@@ -264,13 +302,13 @@
       html2canvas(cert, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: null
       }).then(canvas => {
         canvas.toBlob((blob) => {
           const formData = new FormData();
           formData.append('chat_id', TELEGRAM_CHAT_ID);
           formData.append('photo', blob, 'Certificate.png');
-          formData.append('caption', `📜 Official Grade 8 Certificate\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
+          formData.append('caption', `📜 Official Oromia Grade 8 Certificate\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
 
           fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
             method: 'POST',
