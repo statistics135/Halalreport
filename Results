@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Result Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1D6FE0; --blue-dark:#144DA6; --blue-soft:#EAF2FF;
+    --bg:#F3F5F8; --card:#FFFFFF; --line:#E7EAEE;
+    --text:#1A1F29; --text-2:#6B7280; --text-3:#9CA3AF;
+    --green:#0F9D58; --green-soft:#E6F7EE;
+    --red:#E03131; --red-soft:#FDEBEB;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans Ethiopic',sans-serif;line-height:1.5;}
+  .wrap{max-width:680px;margin:0 auto;padding:0 0 60px;}
+  .hidden{display:none !important;}
+
+  header{
+    background:#fff;border-bottom:1px solid var(--line);padding:14px 18px;
+    display:flex;align-items:center;gap:12px;
+  }
+  header .logo{
+    width:40px;height:40px;border-radius:50%;background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+  }
+  header h1{font-size:16px;margin:0;color:var(--blue-dark);font-weight:700;}
+  header p{font-size:11.5px;margin:1px 0 0;color:var(--text-2);}
+
+  .search-box{margin:22px 18px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
+  .search-box label{display:block;font-size:12.5px;color:var(--text-2);margin-bottom:8px;font-weight:600;}
+  .search-row{display:flex;gap:8px;}
+  .search-row input{
+    flex:1;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;font-size:15px;
+    font-family:'Inter',monospace;letter-spacing:.5px;
+  }
+  .search-row input:focus{outline:none;border-color:var(--blue);}
+  .search-row button{
+    background:var(--blue);color:#fff;border:none;border-radius:8px;padding:0 22px;font-weight:700;
+    font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;
+  }
+  .search-row button:hover{background:var(--blue-dark);}
+  .search-row button:disabled{opacity:.6;cursor:not-allowed;}
+  .err{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+
+  .result{margin:18px 18px 0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 20px;margin-bottom:16px;}
+  .card h2{font-size:13px;color:var(--text-2);margin:0 0 16px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+
+  .profile-photo{
+    width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px;
+    border:3px solid var(--blue-soft);background:var(--blue-soft);
+  }
+  .profile-name{text-align:center;font-size:19px;font-weight:800;margin:0 0 18px;color:var(--text);}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;}
+  .info-grid .item .k{font-size:11.5px;color:var(--text-2);margin-bottom:3px;}
+  .info-grid .item .v{font-size:14.5px;font-weight:700;color:var(--text);}
+
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+  .summary-grid .box .k{font-size:11px;color:var(--text-2);margin-bottom:4px;}
+  .summary-grid .box .v{font-size:19px;font-weight:800;color:var(--blue-dark);}
+  .status-pill{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+    padding:7px 16px;border-radius:20px;
+  }
+  .status-pass{background:var(--green-soft);color:var(--green);}
+  .status-fail{background:var(--red-soft);color:var(--red);}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:11.5px;color:var(--text-2);font-weight:600;padding:8px 6px;border-bottom:1.5px solid var(--line);}
+  tbody td{padding:10px 6px;font-size:13.5px;border-bottom:1px solid var(--line);}
+  tbody tr:last-child td{border-bottom:none;}
+  .subj-name{font-weight:600;}
+  .subj-score{text-align:right;font-weight:700;color:var(--blue-dark);}
+
+  .empty-msg{text-align:center;padding:40px 20px;color:var(--text-3);font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🎓</div>
+    <div>
+      <h1>Student Result Portal</h1>
+      <p>Result Management System</p>
+    </div>
+  </header>
+
+  <div class="search-box">
+    <label>Enter your Registration Number</label>
+    <div class="search-row">
+      <input type="text" id="reg-input" placeholder="e.g. 0034112" autocomplete="off">
+      <button type="button" id="btn-search">Search</button>
+    </div>
+    <div class="err" id="search-err"></div>
+  </div>
+
+  <div class="result hidden" id="result-box"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ7MU2B58bWcu-8jH9Pvv5Ob9XGQyx4NU",
+  authDomain: "halal-report-2.firebaseapp.com",
+  projectId: "halal-report-2",
+  storageBucket: "halal-report-2.firebasestorage.app",
+  messagingSenderId: "242965792260",
+  appId: "1:242965792260:web:8dd83989172924f8c5d751"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
+const TELEGRAM_CHAT_ID = '6853753240';
+async function sendTelegramText(text){
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text })
+    });
+  }catch(e){ console.error('Telegram error', e); }
+}
+
+function escapeAttr(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function renderResult(data){
+  const box = document.getElementById('result-box');
+  const isPass = (data.status || '').toLowerCase().startsWith('pass');
+  const subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+  box.innerHTML = `
+    <div class="card">
+      <img class="profile-photo" src="${escapeAttr(data.photoUrl || '')}" onerror="this.style.display='none'">
+      <div class="profile-name">${escapeAttr(data.name)}</div>
+      <div class="info-grid">
+        <div class="item"><div class="k">Registration Number</div><div class="v">${escapeAttr(data.registrationNumber)}</div></div>
+        <div class="item"><div class="k">Nationality</div><div class="v">${escapeAttr(data.nationality || '—')}</div></div>
+        <div class="item"><div class="k">Gender</div><div class="v">${escapeAttr(data.gender || '—')}</div></div>
+        <div class="item"><div class="k">Zone</div><div class="v">${escapeAttr(data.zone || '—')}</div></div>
+        <div class="item"><div class="k">Grade</div><div class="v">${escapeAttr(data.grade || '—')}</div></div>
+        <div class="item"><div class="k">Woreda</div><div class="v">${escapeAttr(data.woreda || '—')}</div></div>
+        <div class="item"><div class="k">Academic Year</div><div class="v">${escapeAttr(data.academicYear || '—')}</div></div>
+        <div class="item"><div class="k">School</div><div class="v">${escapeAttr(data.school || '—')}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Result Summary</h2>
+      <div class="summary-grid">
+        <div class="box"><div class="k">Total Score</div><div class="v">${escapeAttr(data.totalScore ?? '—')}</div></div>
+        <div class="box"><div class="k">Mark</div><div class="v">${escapeAttr(data.mark ?? '—')}</div></div>
+        <div class="box"><div class="k">Percentile</div><div class="v">${escapeAttr(data.percentile ?? '—')}</div></div>
+        <div class="box"><div class="k">Average</div><div class="v">${escapeAttr(data.average ?? '—')}</div></div>
+      </div>
+      <div class="k" style="margin-bottom:6px;">Status</div>
+      <span class="status-pill ${isPass ? 'status-pass' : 'status-fail'}">${isPass ? '✓' : '✕'} ${escapeAttr(data.status || '—')}</span>
+    </div>
+
+    ${subjects.length ? `
+    <div class="card">
+      <h2>Subject Wise Results</h2>
+      <table>
+        <thead><tr><th>Subject</th><th style="text-align:right;">Score</th></tr></thead>
+        <tbody>
+          ${subjects.map(s=>`<tr><td class="subj-name">${escapeAttr(s.name)}</td><td class="subj-score">${escapeAttr(s.score)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : ''}
+  `;
+  box.classList.remove('hidden');
+}
+
+async function doSearch(){
+  const errEl = document.getElementById('search-err');
+  errEl.style.display = 'none';
+  document.getElementById('result-box').classList.add('hidden');
+
+  const reg = document.getElementById('reg-input').value.trim();
+  if(!reg){ errEl.textContent = 'Please enter a registration number.'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('btn-search');
+  btn.disabled = true; btn.textContent = 'Searching...';
+  try{
+    const snap = await getDoc(doc(db,'students',reg));
+    if(!snap.exists()){
+      errEl.textContent = 'No result found for this registration number.';
+      errEl.style.display = 'block';
+    }else{
+      const data = snap.data();
+      renderResult(data);
+      sendTelegramText(`🔍 ውጤት ታይቷል\n👤 ${data.name}\n🆔 ${data.registrationNumber}`);
+    }
+  }catch(e){
+    console.error(e);
+    errEl.textContent = 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Search';
+}
+document.getElementById('btn-search').addEventListener('click', doSearch);
+document.getElementById('reg-input').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doSearch(); });
+</script>
+</body>
+</html>
