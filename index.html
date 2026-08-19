@@ -1,322 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="am">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oromia Education Bureau Primary Education Certificate</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Card Generator & Canvas Editor</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- HTML Canvas ወደ Image መቀየሪያ ላይብረሪ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Times New Roman', Times, serif; background-color: #e5e7eb; }
-    
-    /* Authentic Certificate Background Pattern & Color */
-    .cert-container {
-      width: 794px;
-      height: 1123px; /* A4 Standard Ratio */
-      background-color: #edf5ea;
-      background-image: radial-gradient(#2e7d32 0.5px, transparent 0.5px), radial-gradient(#2e7d32 0.5px, #edf5ea 0.5px);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-      border: 14px solid #2e7d32;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      position: relative;
-    }
-
-    .cert-inner-border {
-      border: 2px solid #1b5e20;
-      height: 100%;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    /* Stamp Styling */
-    .official-stamp {
-      width: 125px;
-      height: 125px;
-      border: 3px double #b71c1c;
-      border-radius: 50%;
-      color: #b71c1c;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-weight: bold;
-      font-size: 8px;
-      line-height: 1.1;
-      transform: rotate(-10deg);
-      opacity: 0.9;
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: inset 0 0 0 2px #b71c1c;
-    }
-  </style>
 </head>
-<body class="p-4 flex flex-col items-center min-h-screen">
+<body>
 
-  <!-- Admin Control Form -->
-  <div class="w-full max-w-4xl bg-white border border-gray-300 p-4 rounded-xl mb-6 shadow-md">
-    <h3 class="text-sm font-bold text-emerald-800 uppercase mb-3"><i class="fa-solid fa-pen-to-square"></i> ADMIN - UPDATE CERTIFICATE DATA</h3>
-    <div class="grid grid-cols-3 gap-2 text-xs">
-      <input type="text" id="adm-reg" placeholder="Reg No. (e.g. 544738)" class="p-2 border rounded">
-      <input type="text" id="adm-name" placeholder="Student Full Name" class="p-2 border rounded">
-      <input type="text" id="adm-year" placeholder="Bara (e.g. 2012)" class="p-2 border rounded">
-      <input type="text" id="adm-zone" placeholder="Godina / City (e.g. Jimmaa)" class="p-2 border rounded">
-      <input type="text" id="adm-school" placeholder="Mana Barumsa (e.g. saxoo)" class="p-2 border rounded col-span-2">
+  <div class="app-container">
+    <!-- የመቆጣጠሪያ ፓነል (Sidebar) -->
+    <div class="controls-panel">
+      <h2>የካርድ ማዘጋጃ</h2>
       
-      <div class="col-span-3 my-1 border-t pt-1 font-bold text-gray-700">Subject Scores:</div>
-      <input type="text" id="adm-eng" placeholder="Afaan Ingilizii (e.g. 83.33)" class="p-2 border rounded">
-      <input type="text" id="adm-phy" placeholder="Fiiziksii (AA) (e.g. 77.78)" class="p-2 border rounded">
-      <input type="text" id="adm-orom" placeholder="Afaan Oromoo 2ffaa (e.g. 86.67)" class="p-2 border rounded">
-      <input type="text" id="adm-chem" placeholder="Keemistirii (AA) (e.g. 83.33)" class="p-2 border rounded">
-      <input type="text" id="adm-amhar" placeholder="Afaan Amaaraa 1ffaa (e.g. 85.00)" class="p-2 border rounded">
-      <input type="text" id="adm-soc" placeholder="Hawaasa (AA) (e.g. 90.00)" class="p-2 border rounded">
-      <input type="text" id="adm-math" placeholder="Herrega (AA) (e.g. 70.00)" class="p-2 border rounded">
-      <input type="text" id="adm-blag" placeholder="BLAG (AA) (e.g. 93.33)" class="p-2 border rounded">
-      <input type="text" id="adm-bio" placeholder="Baayoloojii (AA) (e.g. 78.33)" class="p-2 border rounded">
-      
-      <div class="col-span-3 my-1 border-t pt-1 font-bold text-gray-700">Summary:</div>
-      <input type="text" id="adm-avg" placeholder="Qabxii Giddu-Galeessaa (e.g. 83.14%)" class="p-2 border rounded">
-      <input type="text" id="adm-percentile" placeholder="Parsantaayilii (e.g. 98.7)" class="p-2 border rounded">
-      <input type="text" id="adm-status" placeholder="Status (e.g. DARBE/ITE (PROMOTED))" class="p-2 border rounded col-span-2">
-      
-      <div class="col-span-3">
-        <label class="block font-bold text-gray-700 mb-1">📷 Upload Student Photo</label>
-        <input type="file" id="adm-photo" accept="image/*" class="w-full p-1 border rounded bg-white">
+      <!-- 1. የካርድ ጀርባ ማስገቢያ -->
+      <div class="control-group">
+        <label>1. የካርድ ጀርባ (Background) ያስገቡ:</label>
+        <input type="file" id="bg-uploader" accept="image/*">
+      </div>
+
+      <!-- 2. የሰው/ሎጎ ፎቶ ማስገቢያ -->
+      <div class="control-group">
+        <label>2. ተጨማሪ ፎቶ (Profile/Logo) ያስገቡ:</label>
+        <input type="file" id="overlay-uploader" accept="image/*">
+      </div>
+
+      <!-- 3. ጽሁፍ ማስገቢያ እና ስታይል -->
+      <div class="control-group">
+        <label>3. ጽሁፍ ያስገቡ:</label>
+        <input type="text" id="text-input" placeholder="ጽሁፍ እዚህ ይፃፉ...">
+        <button id="add-text-btn">+ ጽሁፍ ጨምር</button>
+      </div>
+
+      <!-- የጽሁፍ ማስተካከያዎች -->
+      <div class="control-group text-styling-tools">
+        <label>የመረጥከው ጽሁፍ ማስተካከያ:</label>
+        <div class="style-row">
+          <input type="color" id="text-color" value="#000000" title="ቀለም መቀየሪያ">
+          <input type="number" id="font-size" value="24" min="10" max="100" title="መጠን">
+          <button id="bold-btn"><b>B</b></button>
+          <select id="font-family">
+            <option value="sans-serif">Sans-Serif</option>
+            <option value="serif">Serif</option>
+            <option value="monospace">Monospace</option>
+            <option value="cursive">Cursive</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 4. ማውረጃ ቁልፍ -->
+      <div class="control-group download-section">
+        <button id="download-btn" class="download-btn">📥 ካርዱን አውርድ (PNG)</button>
       </div>
     </div>
-    <button onclick="saveStudentToFirebase()" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded text-xs font-bold flex justify-center items-center gap-2 shadow">
-      <i class="fa-solid fa-floppy-disk"></i> Save & Send Certificate Image to Telegram
-    </button>
-  </div>
 
-  <!-- PRINTABLE OFFICIAL CERTIFICATE -->
-  <div id="result-card" class="cert-container p-3 text-black">
-    <div class="cert-inner-border">
-      
-      <!-- Top Header: Emblem, Title & Photo -->
-      <div>
-        <div class="flex justify-between items-start">
-          <div class="w-28 h-28">
-            <!-- Official Emblem Logo -->
-            <svg viewBox="0 0 100 100" class="w-full h-full">
-              <circle cx="50" cy="50" r="46" fill="#e65100" />
-              <circle cx="50" cy="50" r="36" fill="#f57c00" />
-              <path d="M 30 68 Q 50 18 70 68" stroke="#2e7d32" stroke-width="10" fill="none" />
-              <circle cx="50" cy="35" r="8" fill="#f57c00" />
-            </svg>
-          </div>
-          <div class="text-center flex-1 px-2 pt-2">
-            <h1 class="text-xl font-bold tracking-tight text-gray-900">Biiroo Barnootaa Oromiyaatti Waraqaa Ragaa Xumura</h1>
-            <h2 class="text-lg font-bold mt-1 text-gray-900">Barnoota Sadarkaa Tokkoffaa (Kutaa 8ffaa)</h2>
-            <h3 class="text-xs italic text-gray-800 mt-0.5">Oromia Education Bureau Primary Education (Grade 8) Completion Certificate</h3>
-          </div>
-          <div class="text-right">
-            <div class="w-24 h-28 border-2 border-gray-400 bg-white mb-1 overflow-hidden shadow-sm">
-              <img id="card-photo" src="" class="w-full h-full object-cover hidden">
-              <div id="photo-placeholder" class="text-[10px] text-gray-400 text-center pt-8">Photo Here</div>
-            </div>
-            <span class="text-xs font-bold block text-gray-900">Reg No.: <span id="card-reg">544738</span></span>
-          </div>
-        </div>
-
-        <!-- Student Credentials Line -->
-        <div class="mt-8 text-sm leading-relaxed text-gray-900">
-          <p>
-            <span class="font-bold">Barataa/tuu</span> 
-            <span id="card-name" class="font-bold underline px-2">Keru Mahammad Ibraahim murii 18</span> 
-            <span>Qorumsa Kutaa 8ffaa Bara</span> 
-            <span id="card-year" class="font-bold underline px-2">2012</span>
-          </p>
-          <p class="mt-2">
-            <span id="card-zone" class="font-bold">Godina/Bulchiinsa Magaalaa Jimmaa</span> 
-            <span id="card-school" class="font-bold underline px-2">Mana Barumsa saxoo</span> 
-            <span>Keessatti</span>
-          </p>
-          <p class="mt-2 font-bold">Fudhatee/tee Qabxii Kanaa Gadi galmeesseera</p>
-        </div>
-
-        <!-- Subject Wise Score Table -->
-        <div class="mt-8 grid grid-cols-2 gap-x-16 gap-y-2 text-sm font-semibold border-t-2 border-b-2 border-gray-400 py-4 text-gray-900">
-          <div class="flex justify-between"><span>Afaan Ingilizii</span><span id="card-eng">83.33</span></div>
-          <div class="flex justify-between"><span>Fiiziksii (AA)</span><span id="card-phy">77.78</span></div>
-
-          <div class="flex justify-between"><span>Afaan Oromoo 2ffaa</span><span id="card-orom">86.67</span></div>
-          <div class="flex justify-between"><span>Keemistirii (AA)</span><span id="card-chem">83.33</span></div>
-
-          <div class="flex justify-between"><span>Afaan Amaaraa 1ffaa</span><span id="card-amhar">85.00</span></div>
-          <div class="flex justify-between"><span>Hawaasa (AA)</span><span id="card-soc">90.00</span></div>
-
-          <div class="flex justify-between"><span>Herrega (AA)</span><span id="card-math">70.00</span></div>
-          <div class="flex justify-between"><span>BLAG (AA)</span><span id="card-blag">93.33</span></div>
-
-          <div class="flex justify-between"><span>Baayoloojii (AA)</span><span id="card-bio">78.33</span></div>
-          <div></div>
-        </div>
-
-        <!-- Summary Results -->
-        <div class="mt-8 text-sm space-y-3 text-gray-900">
-          <div class="flex gap-8 items-center">
-            <span class="font-bold w-48">Qabxii Giddu-Galeessaa</span>
-            <span id="card-avg" class="font-bold text-base">83.14%</span>
-          </div>
-          <div class="flex gap-8 items-center">
-            <span class="font-bold w-48">Parsantaayilii</span>
-            <span id="card-percentile" class="font-bold text-base">98.7</span>
-          </div>
-          <div class="flex gap-8 items-center pt-2">
-            <span class="font-bold w-48">Gara kutaa 9ffaatti</span>
-            <span id="card-status" class="font-bold text-base uppercase">DARBE/ITE (PROMOTED)</span>
-          </div>
-        </div>
+    <!-- የካርዱ ማሳያ (Canvas Area) -->
+    <div class="canvas-container">
+      <div id="card-canvas">
+        <img id="card-bg" src="" alt="የካርድ ጀርባ እዚህ ይታያል" style="display:none;">
+        <div id="canvas-placeholder">እባክዎን የካርድ ጀርባ ፎቶ ይጫኑ</div>
       </div>
-
-      <!-- Official Stamp & Signatures Section -->
-      <div class="mt-8 border-t border-gray-400 pt-4">
-        <div class="flex justify-between items-end relative">
-          
-          <!-- Bureau Head Signature -->
-          <div class="text-center w-52">
-            <div class="h-10 border-b border-black mb-1 flex items-end justify-center italic text-xs font-bold">Dr. Tolaa Bariisoo</div>
-            <p class="font-bold text-xs">Hogganaa Biiroo Barnootaa</p>
-            <p class="text-[10px]">Oromia Education Bureau Head</p>
-          </div>
-
-          <!-- Original Official Red Stamp -->
-          <div class="official-stamp">
-            <div>Nannoo Oromiyaatti</div>
-            <div class="my-0.5">Biiroo Barnootaa</div>
-            <div>★ B.S.S.P.E ★</div>
-            <div class="mt-0.5 text-[7px]">OFFICIAL STAMP</div>
-          </div>
-
-          <!-- Examination Director Signature -->
-          <div class="text-center w-60">
-            <div class="h-10 border-b border-black mb-1 flex items-end justify-center italic text-xs font-bold">Laggasaa Dirribaa Baatuu</div>
-            <p class="font-bold text-xs">Daayirekteera Daayirektoreetii Iyyaafannoo</p>
-            <p class="text-[10px]">Assessment and Examination Directorate Director</p>
-          </div>
-        </div>
-
-        <!-- Footer Disclaimer -->
-        <div class="mt-6 flex justify-between items-center text-[10px] text-gray-800 border-t border-gray-300 pt-2">
-          <p class="w-1/2"><span class="font-bold">Habachiisa:</span> Waraqaan ragaa kun yoo haqame yookiin yoo suuraan irraa ka'e faayidaa hinqabu.</p>
-          <p class="w-1/2 text-right"><span class="font-bold">Note:</span> Erasure, alteration or absence of the photograph Invalidates this certificate.</p>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
-    const TELEGRAM_CHAT_ID = '6853753240';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZ7MU2B58bWcu-8jH9Pvv5Ob9XGQyx4NU",
-      authDomain: "halal-report-2.firebaseapp.com",
-      projectId: "halal-report-2",
-      storageBucket: "halal-report-2.firebasestorage.app",
-      messagingSenderId: "242965792260",
-      appId: "1:242965792260:web:8dd83989172924f8c5d751"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let currentPhotoBase64 = "";
-
-    // Dynamic Binding Controls
-    const bindings = [
-      { input: 'adm-reg', target: 'card-reg' },
-      { input: 'adm-name', target: 'card-name' },
-      { input: 'adm-year', target: 'card-year' },
-      { input: 'adm-zone', target: 'card-zone' },
-      { input: 'adm-school', target: 'card-school' },
-      { input: 'adm-eng', target: 'card-eng' },
-      { input: 'adm-phy', target: 'card-phy' },
-      { input: 'adm-orom', target: 'card-orom' },
-      { input: 'adm-chem', target: 'card-chem' },
-      { input: 'adm-amhar', target: 'card-amhar' },
-      { input: 'adm-soc', target: 'card-soc' },
-      { input: 'adm-math', target: 'card-math' },
-      { input: 'adm-blag', target: 'card-blag' },
-      { input: 'adm-bio', target: 'card-bio' },
-      { input: 'adm-avg', target: 'card-avg' },
-      { input: 'adm-percentile', target: 'card-percentile' },
-      { input: 'adm-status', target: 'card-status' }
-    ];
-
-    bindings.forEach(b => {
-      document.getElementById(b.input)?.addEventListener('input', (e) => {
-        if(e.target.value.trim()) document.getElementById(b.target).textContent = e.target.value.trim();
-      });
-    });
-
-    // Upload Student Photo Handler
-    document.getElementById('adm-photo').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          currentPhotoBase64 = evt.target.result;
-          const img = document.getElementById('card-photo');
-          img.src = currentPhotoBase64;
-          img.classList.remove('hidden');
-          document.getElementById('photo-placeholder').classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Firebase Save and Telegram Sender
-    window.saveStudentToFirebase = async function() {
-      const reg = document.getElementById('adm-reg').value.trim() || "544738";
-      
-      const studentData = {
-        regNum: reg,
-        name: document.getElementById('card-name').textContent,
-        year: document.getElementById('card-year').textContent,
-        photo: currentPhotoBase64
-      };
-
-      try {
-        await setDoc(doc(db, "certificates", reg), studentData);
-        alert("Certificate Record Saved! Processing image...");
-        sendCertificateToTelegram();
-      } catch(e) {
-        sendCertificateToTelegram();
-      }
-    };
-
-    function sendCertificateToTelegram() {
-      const cert = document.getElementById('result-card');
-
-      html2canvas(cert, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null
-      }).then(canvas => {
-        canvas.toBlob((blob) => {
-          const formData = new FormData();
-          formData.append('chat_id', TELEGRAM_CHAT_ID);
-          formData.append('photo', blob, 'Certificate.png');
-          formData.append('caption', `📜 Official Oromia Grade 8 Certificate\n🆔 Reg No: ${document.getElementById('card-reg').textContent}\n👤 Name: ${document.getElementById('card-name').textContent}`);
-
-          fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            body: formData
-          }).then(() => alert("Certificate Photo sent to Telegram successfully!"));
-        }, 'image/png');
-      });
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
