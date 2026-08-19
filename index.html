@@ -2,69 +2,53 @@
 <html lang="am">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Generator & Canvas Editor</title>
+  <title>Custom Card Generator</title>
   <link rel="stylesheet" href="style.css">
-  <!-- HTML Canvas ወደ Image መቀየሪያ ላይብረሪ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-
   <div class="app-container">
-    <!-- የመቆጣጠሪያ ፓነል (Sidebar) -->
     <div class="controls-panel">
       <h2>የካርድ ማዘጋጃ</h2>
       
-      <!-- 1. የካርድ ጀርባ ማስገቢያ -->
       <div class="control-group">
-        <label>1. የካርድ ጀርባ (Background) ያስገቡ:</label>
-        <input type="file" id="bg-uploader" accept="image/*">
-      </div>
-
-      <!-- 2. የሰው/ሎጎ ፎቶ ማስገቢያ -->
-      <div class="control-group">
-        <label>2. ተጨማሪ ፎቶ (Profile/Logo) ያስገቡ:</label>
-        <input type="file" id="overlay-uploader" accept="image/*">
-      </div>
-
-      <!-- 3. ጽሁፍ ማስገቢያ እና ስታይል -->
-      <div class="control-group">
-        <label>3. ጽሁፍ ያስገቡ:</label>
-        <input type="text" id="text-input" placeholder="ጽሁፍ እዚህ ይፃፉ...">
-        <button id="add-text-btn">+ ጽሁፍ ጨምር</button>
-      </div>
-
-      <!-- የጽሁፍ ማስተካከያዎች -->
-      <div class="control-group text-styling-tools">
-        <label>የመረጥከው ጽሁፍ ማስተካከያ:</label>
+        <label>የካርድ ሳይዝ (px):</label>
         <div class="style-row">
-          <input type="color" id="text-color" value="#000000" title="ቀለም መቀየሪያ">
-          <input type="number" id="font-size" value="24" min="10" max="100" title="መጠን">
-          <button id="bold-btn"><b>B</b></button>
-          <select id="font-family">
-            <option value="sans-serif">Sans-Serif</option>
-            <option value="serif">Serif</option>
-            <option value="monospace">Monospace</option>
-            <option value="cursive">Cursive</option>
-          </select>
+            <input type="number" id="canvas-width" value="600" placeholder="Width">
+            <input type="number" id="canvas-height" value="380" placeholder="Height">
         </div>
       </div>
 
-      <!-- 4. ማውረጃ ቁልፍ -->
-      <div class="control-group download-section">
+      <div class="control-group">
+        <label>የካርድ ጀርባ:</label>
+        <input type="file" id="bg-uploader" accept="image/*">
+        <div class="bg-controls">
+            <label>Zoom:</label>
+            <input type="range" id="bg-zoom" min="0.5" max="3" step="0.1" value="1">
+            <label>Move X/Y:</label>
+            <input type="range" id="bg-x" min="-200" max="200" value="0">
+            <input type="range" id="bg-y" min="-200" max="200" value="0">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>ጽሁፍ ጨምር:</label>
+        <input type="text" id="text-input">
+        <button id="add-text-btn">+ ጽሁፍ ጨምር</button>
+      </div>
+
+      <div class="control-group">
         <button id="download-btn" class="download-btn">📥 ካርዱን አውርድ (PNG)</button>
       </div>
     </div>
 
-    <!-- የካርዱ ማሳያ (Canvas Area) -->
     <div class="canvas-container">
       <div id="card-canvas">
-        <img id="card-bg" src="" alt="የካርድ ጀርባ እዚህ ይታያል" style="display:none;">
-        <div id="canvas-placeholder">እባክዎን የካርድ ጀርባ ፎቶ ይጫኑ</div>
+        <div id="bg-wrapper"><img id="card-bg" src=""></div>
+        <div id="canvas-placeholder">ፎቶ ይጫኑ</div>
       </div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
